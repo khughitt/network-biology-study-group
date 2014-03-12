@@ -93,6 +93,19 @@ plot(g)
 - This is a generalization to the distance of the relationships between nodes.
 - *k*=1 is just an ordinary clique
 
+#### Example: Finding significant interactions in yeaste PPI data
+
+![Yeast PPI network](images/ng.167-F1.jpg)
+(Zhu et al, 2008)
+
+In the above example from Zhu et al. (2008), *k*-cliques with k>=5 are found
+for a yeast protein-protein interaction (PPI) dataset, and then grouped
+together to form "clique communities". These groups of cliques were found to
+correlate between with co-expression data and provide better indicators of
+actual interacting proteins. Each node in the above figure depicts a single
+*k*-clique.
+
+
 ### *k*-clans / *k*-clubs
 
 - *k*-cliques do not necessarily produce sub-networks where all of the nodes
@@ -163,11 +176,25 @@ coefficient](https://raw.githubusercontent.com/khughitt/notes/master/courses/Cou
 
 We can extend the above concept to a measure to single nodes:
 
-$$C = \frac{\text{(number of pairs of neighbors of $i$ that are connected)}}{\text{(number of
+$$C_i = \frac{\text{(number of pairs of neighbors of $i$ that are connected)}}{\text{(number of
 pairs of neighbors of $i$)}}$$
 
-- A measure of how the neighbors of a node are connected to each other.
+- Measures how connected the neighbors of a node are to one another.
+- Sometimes referred to as the *local clustering coefficient*
+- By convention, we set this to zero for nodes with degree 0 or 1.
+- Often correlated with betweeness centrality (section 7.7)
+    - Both can be used to tell us about how "influential" a vertex is (e.g. by
+      having power over information flow between other nodes in the network)
+    - Betweeness considers all nodes in components, but local clustering just
+      looks at neighbors of a node.
+    - Local clustering much easier to compute.
 
+### Structural holes
+
+- In networks where neighbors are often connect to one another (e.g. social
+  nets), the local clustering coefficient can help to find areas where this is
+  not the case.
+- These locations are referred to as *structural holes*
 
 References
 ----------

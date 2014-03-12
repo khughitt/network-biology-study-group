@@ -89,6 +89,8 @@ plot(g)
 - This is a generalization to the distance of the relationships between nodes.
 - *k*=1 is just an ordinary clique
 
+#### Example: Finding significant interactions in yeaste PPI data
+
 ![Yeast PPI network](images/ng.167-F1.jpg)
 (Zhu et al, 2008)
 
