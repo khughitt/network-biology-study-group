@@ -89,7 +89,22 @@ plot(graph.adjacency(clique, mode='undirected'))
 - *k-clans* and *k-clubs* are two modified versions of this definition which
   impose restrictions on the connectivity of the sub-groups.
 
+## 7.8.2 Components and *k*-Components
 
+> A *k-component* (or *k-connected component*) is a maximal subset of vertices
+> such that each is reachable from each of the others by at least *k*
+> vertex-indepedent paths.
+
+- *vertex-independent paths* are paths which share none of the same vertices
+  except for the start and end (also, recall that the number of
+  vertex-independent paths between two nodes equals the size of the vertex cut
+  set between those nodes.)
+- This is generalization of the idea of a *component* or *connected component*
+- *k*-components are related to the concept of network robustness (relates to
+  the number of nodes that would have to be removed for two nodes to become
+  disconnected)
+- Social network lit. sometimes uses slightly modified definition to exclude
+  non-contiguous sets of *k*-components.
 
 
 
