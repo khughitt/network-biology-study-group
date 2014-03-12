@@ -20,8 +20,8 @@ cover](http://www-personal.umich.edu/~mejn/networks-an-introduction/cover-s.jpg)
 M.E.J. Newman
 2010
 
-Outline
--------
+Contents
+--------
 
 1. Stochastic Block Models [DD]
 2. Network Biology Overview I [KH]
