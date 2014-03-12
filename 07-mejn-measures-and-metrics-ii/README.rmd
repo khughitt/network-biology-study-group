@@ -30,7 +30,8 @@ group detection (clustering, etc.) are discussed in later sections in the book.
 
 Example:
 
-<div class="chunk" id="clique"><div class="rcode"><div class="source"><pre class="knitr r"># load igraph and set random seed
+```{r clique}
+# load igraph and set random seed
 library(igraph)
 set.seed(1)
 
@@ -42,10 +43,7 @@ diag(clique) = 0
 
 # plot cliques
 plot(graph.adjacency(clique, mode='undirected'))
-</pre></div>
-<div class="rimage default"><img src="figure/clique.png" title="plot of chunk clique" alt="plot of chunk clique" class="plot" /></div>
-</div></div>
-
+```
 
 - In the above figure, nodes 1-4 and 4-6 each form separate cliques
 - Cliques can overlap.
