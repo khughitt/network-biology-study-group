@@ -30,21 +30,30 @@ group detection (clustering, etc.) are discussed in later sections in the book.
 
 Example:
 
-<div class="chunk" id="clique"><div class="rcode"><div class="source"><pre class="knitr r"># load igraph and set random seed
+
+```r
+# load igraph and set random seed
 library(igraph)
 set.seed(1)
 
 # adj matrix with two cliques
 clique = matrix(0, 6, 6)
-clique[0:4,0:4] = 1
-clique[3,4] = clique[4,5] = clique[4,5] = clique[4,6] = clique[5,6] = 1
+clique[0:4, 0:4] = 1
+clique[3, 4] = clique[4, 5] = clique[4, 5] = clique[4, 6] = clique[5, 6] = 1
 diag(clique) = 0
 
+# convert to graph
+g = graph.adjacency(clique, mode = "undirected")
+
+# color cliques
+V(g)$color = ifelse(V(g) %in% c(1, 2, 3), "#1E90FF", "#FF1493")
+V(g)[4]$color = "#8C14FF"
+
 # plot cliques
-plot(graph.adjacency(clique, mode='undirected'))
-</pre></div>
-<div class="rimage default"><img src="figure/clique.png" title="plot of chunk clique" alt="plot of chunk clique" class="plot" /></div>
-</div></div>
+plot(g)
+```
+
+![plot of chunk clique](figure/clique.png) 
 
 
 - In the above figure, nodes 1-4 and 4-6 each form separate cliques
@@ -108,7 +117,56 @@ plot(graph.adjacency(clique, mode='undirected'))
 - Social network lit. sometimes uses slightly modified definition to exclude
   non-contiguous sets of *k*-components.
 
+7.9 Transitivity
+----------------
 
+## Overview
+
+Transitive relations (math):
+- if A ○ B, and B ○ C, then A ○ C
+- e.g. equality operator
+
+In some cases, various relations on the vertices of a network may be
+transitive.
+- Ex. "connected by an edge"
+- Networks showing this property are themselves said to be *transitive*
+- "Perfect transitivity" ⇒ Each network component is fully connected
+- "Partial transitivity" ⇒ If AB and BC, AC is not guaranteed to have an edge,
+  but is more likely. (Here, "AB" means that A and B are vertices in the
+  network and there is an edge between them.)
+
+Quantifying the level of transitivity:
+
+- if *uv* and *vw*, then the two-edge path *uvw* exists.
+- if *uw* also exists, then we say the path is *closed* -- it forms a loop of
+  length 3 (a triangle) in the network.
+- SNA -- *u*, *v*, and *w* form a *closed triad*
+
+## Clustering Coefficient
+
+> We define the clustering coefficient to be the fraction of paths of length
+> two in the network that are closed.
+
+$$C = \frac{\text{(number of closed paths of length two)}}{\text{(number of
+paths of length two)}}$$
+
+![clustering
+coefficient](https://raw.githubusercontent.com/khughitt/notes/master/courses/Coursera-Network_Analysis_in_Systems_Biology/images/clustering_coefficent_ravasz.jpg)
+(Ravasz et al. 2002)
+
+- *C*=1 perfect transivity - all components are cliques
+- *C*=0 no closed triads in the network (e.g. a tree)
+- Provides a measure of how connected the neighbors of nodes are to one another
+  on average.
+
+## 7.9.1 Local clustering and redundancy
+
+We can extend the above concept to a measure to single nodes:
+
+$$C = \frac{\text{(number of pairs of neighbors of $i$ that are connected)}}{\text{(number of
+pairs of neighbors of $i$)}}$$
+
+- A measure of how the neighbors of a node are connected to each other.
 
 
 References
