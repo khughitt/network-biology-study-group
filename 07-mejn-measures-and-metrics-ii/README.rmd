@@ -364,7 +364,7 @@ of the grouping measures described above on this network.
 ```{r dream4_kcore}
 # color palette including default light blue
 library(RColorBrewer)
-pal = c("#7EC0EE", sample(brewer.pal(9, "Set1")))
+set.seed(1); pal = c("#7EC0EE", sample(brewer.pal(9, "Set1")))
 
 # compute k-cores for with respect to ingoing edges, outgoing edges and
 # all edges (undirected)
@@ -392,6 +392,16 @@ V(undirected)$color = pal[undirected.kcores]
 plot(undirected, main='k-cores (undirected)')
 ```
 
+## k-cliques
+
+Next, let's look for k-cliques in the data using
+[RBGL](http://www.bioconductor.org/packages/release/bioc/html/RBGL.html).
+
+```{r dream4_kcliques}
+# convert to an undirected node-edge list readable by RBGL and list 2-cliques
+library(RBGL)
+kCliques(igraph.to.graphNEL(as.undirected(g)))[[2]]
+```
 
 References
 ----------

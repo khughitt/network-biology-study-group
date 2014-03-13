@@ -401,6 +401,7 @@ of the grouping measures described above on this network.
 ```r
 # color palette including default light blue
 library(RColorBrewer)
+set.seed(1)
 pal = c("#7EC0EE", sample(brewer.pal(9, "Set1")))
 
 # compute k-cores for with respect to ingoing edges, outgoing edges and all
@@ -447,6 +448,33 @@ plot(undirected, main = "k-cores (undirected)")
 ![plot of chunk dream4_kcore](figure/dream4_kcore4.png) 
 
 
+## k-cliques
+
+Next, let's look for k-cliques in the data using
+[RBGL](http://www.bioconductor.org/packages/release/bioc/html/RBGL.html).
+
+
+```r
+# convert to an undirected node-edge list readable by RBGL and list
+# 2-cliques
+library(RBGL)
+kCliques(igraph.to.graphNEL(as.undirected(g)))[[2]]
+```
+
+```
+## [[1]]
+## [1] "G1" "G3" "G4" "G5"
+## 
+## [[2]]
+## [1] "G2" "G6" "G8"
+## 
+## [[3]]
+## [1] "G1"  "G3"  "G4"  "G7"  "G10"
+## 
+## [[4]]
+## [1] "G3"  "G4"  "G9"  "G10"
+```
+
 
 References
 ----------
@@ -477,7 +505,7 @@ date()
 ```
 
 ```
-## [1] "Thu Mar 13 12:50:14 2014"
+## [1] "Thu Mar 13 17:07:41 2014"
 ```
 
 ```r
@@ -489,26 +517,28 @@ sessionInfo()
 ## Platform: x86_64-unknown-linux-gnu (64-bit)
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
-##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.utf8       LC_NUMERIC=C             
+##  [3] LC_TIME=en_US.utf8        LC_COLLATE=en_US.utf8    
+##  [5] LC_MONETARY=en_US.utf8    LC_MESSAGES=en_US.utf8   
+##  [7] LC_PAPER=en_US.utf8       LC_NAME=C                
+##  [9] LC_ADDRESS=C              LC_TELEPHONE=C           
+## [11] LC_MEASUREMENT=en_US.utf8 LC_IDENTIFICATION=C      
 ## 
 ## attached base packages:
 ## [1] parallel  stats     graphics  grDevices utils     datasets  methods  
 ## [8] base     
 ## 
 ## other attached packages:
-##  [1] Matrix_1.0-14        lattice_0.20-27      RColorBrewer_1.0-5  
-##  [4] DREAM4_0.99.18       GenomicRanges_1.14.4 XVector_0.2.0       
-##  [7] IRanges_1.20.7       BiocGenerics_0.8.0   igraph_0.7.0        
-## [10] knitr_1.5            setwidth_1.0-3       colorout_1.0-0      
+##  [1] RBGL_1.38.0          graph_1.40.1         DREAM4_0.99.18      
+##  [4] GenomicRanges_1.14.4 XVector_0.2.0        IRanges_1.20.7      
+##  [7] BiocGenerics_0.8.0   BiocInstaller_1.12.0 RColorBrewer_1.0-5  
+## [10] igraph_0.7.0         knitr_1.5            vimcom.plus_0.9-92  
+## [13] setwidth_1.0-3       colorout_1.0-0      
 ## 
 ## loaded via a namespace (and not attached):
-## [1] evaluate_0.5.1 formatR_0.10   grid_3.0.2     markdown_0.6.4
-## [5] stats4_3.0.2   stringr_0.6.2  tools_3.0.2
+## [1] evaluate_0.5.1  formatR_0.10    grid_3.0.2      lattice_0.20-23
+## [5] markdown_0.6.4  Matrix_1.0-14   stats4_3.0.2    stringr_0.6.2  
+## [9] tools_3.0.2
 ```
 
 
