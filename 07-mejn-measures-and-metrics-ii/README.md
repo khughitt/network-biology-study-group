@@ -385,8 +385,8 @@ ts_data <- expression_data[, col_ids]
 
 # load actual network and plot it using igraph
 actual_adjmatrix = exptData(dream4_010_01)[[1]]
-actual_graph = graph.adjacency(actual_adjmatrix)
-plot(actual_graph)
+g = graph.adjacency(actual_adjmatrix)
+plot(g)
 ```
 
 ![plot of chunk dream4_data](figure/dream4_data.png) 
@@ -398,6 +398,53 @@ of the grouping measures described above on this network.
 ## k-core
 
 
+```r
+# color palette including default light blue
+library(RColorBrewer)
+pal = c("#7EC0EE", sample(brewer.pal(9, "Set1")))
+
+# compute k-cores for with respect to ingoing edges, outgoing edges and all
+# edges (undirected)
+
+# outdegree k-cores
+g.kcores = graph.coreness(g, mode = "out")
+V(g)$color = pal[g.kcores + 1]
+plot(g, main = "Outdegree k-cores")
+```
+
+![plot of chunk dream4_kcore](figure/dream4_kcore1.png) 
+
+```r
+
+# indegree k-core
+g.kcores = graph.coreness(g, mode = "in")
+V(g)$color = pal[g.kcores + 1]
+plot(g, main = "indegree k-cores")
+```
+
+![plot of chunk dream4_kcore](figure/dream4_kcore2.png) 
+
+```r
+
+# k-cores all edges
+g.kcores = graph.coreness(g, mode = "all")
+V(g)$color = pal[g.kcores]
+plot(g, main = "k-cores (in- and out-edges used)")
+```
+
+![plot of chunk dream4_kcore](figure/dream4_kcore3.png) 
+
+```r
+
+# k-cores undirected (in theory, this should be the same as above, but this
+# does not appear to be the case...)
+undirected = as.undirected(g)
+undirected.kcores = graph.coreness(undirected)
+V(undirected)$color = pal[undirected.kcores]
+plot(undirected, main = "k-cores (undirected)")
+```
+
+![plot of chunk dream4_kcore](figure/dream4_kcore4.png) 
 
 
 
@@ -430,7 +477,7 @@ date()
 ```
 
 ```
-## [1] "Thu Mar 13 12:18:52 2014"
+## [1] "Thu Mar 13 12:50:14 2014"
 ```
 
 ```r
@@ -454,13 +501,14 @@ sessionInfo()
 ## [8] base     
 ## 
 ## other attached packages:
-## [1] DREAM4_0.99.18       GenomicRanges_1.14.4 XVector_0.2.0       
-## [4] IRanges_1.20.7       BiocGenerics_0.8.0   igraph_0.7.0        
-## [7] knitr_1.5            setwidth_1.0-3       colorout_1.0-0      
+##  [1] Matrix_1.0-14        lattice_0.20-27      RColorBrewer_1.0-5  
+##  [4] DREAM4_0.99.18       GenomicRanges_1.14.4 XVector_0.2.0       
+##  [7] IRanges_1.20.7       BiocGenerics_0.8.0   igraph_0.7.0        
+## [10] knitr_1.5            setwidth_1.0-3       colorout_1.0-0      
 ## 
 ## loaded via a namespace (and not attached):
-## [1] evaluate_0.5.1 formatR_0.10   markdown_0.6.4 stats4_3.0.2  
-## [5] stringr_0.6.2  tools_3.0.2
+## [1] evaluate_0.5.1 formatR_0.10   grid_3.0.2     markdown_0.6.4
+## [5] stats4_3.0.2   stringr_0.6.2  tools_3.0.2
 ```
 
 

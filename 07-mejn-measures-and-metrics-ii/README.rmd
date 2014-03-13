@@ -352,8 +352,8 @@ ts_data <- expression_data[,col_ids]
 
 # load actual network and plot it using igraph
 actual_adjmatrix = exptData(dream4_010_01)[[1]]
-actual_graph = graph.adjacency(actual_adjmatrix)
-plot(actual_graph)
+g = graph.adjacency(actual_adjmatrix)
+plot(g)
 ```
 
 The above plot depicts the "true" underlying network. Next, let's test out some
@@ -362,7 +362,34 @@ of the grouping measures described above on this network.
 ## k-core
 
 ```{r dream4_kcore}
+# color palette including default light blue
+library(RColorBrewer)
+pal = c("#7EC0EE", sample(brewer.pal(9, "Set1")))
 
+# compute k-cores for with respect to ingoing edges, outgoing edges and
+# all edges (undirected)
+
+# outdegree k-cores
+g.kcores = graph.coreness(g, mode='out')
+V(g)$color = pal[g.kcores + 1]
+plot(g, main='Outdegree k-cores')
+
+# indegree k-core
+g.kcores = graph.coreness(g, mode='in')
+V(g)$color = pal[g.kcores + 1]
+plot(g, main='indegree k-cores')
+
+# k-cores all edges
+g.kcores = graph.coreness(g, mode='all')
+V(g)$color = pal[g.kcores]
+plot(g, main='k-cores (in- and out-edges used)')
+
+# k-cores undirected (in theory, this should be the same as above, but this 
+# does not appear to be the case...)
+undirected = as.undirected(g)
+undirected.kcores = graph.coreness(undirected)
+V(undirected)$color = pal[undirected.kcores]
+plot(undirected, main='k-cores (undirected)')
 ```
 
 
