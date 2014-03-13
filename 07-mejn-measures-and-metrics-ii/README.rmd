@@ -46,16 +46,18 @@ adj.matrix
 # convert to graph
 g = graph.adjacency(adj.matrix, mode='undirected')
 
+# plot graph
+plot(g)
+
 # find all cliques
 g.cliques = maximal.cliques(g)
 
-# color nodes in first clique matched
-V(g)$color = ifelse(V(g) %in% g.cliques[[1]], '#1E90FF', '#FF1493')
+# plot first clique matched
+V(g)$color = ifelse(V(g) %in% g.cliques[[1]], '#FF1493', '#7EC0EE')
+plot(g)
 
-# color nodes in multiple cliques purple
-V(g)[V(g) %in% intersect(g.cliques[[1]], g.cliques[[2]])]$color = "#8C14FF"
-
-# plot cliques
+# plot second clique matched
+V(g)$color = ifelse(V(g) %in% g.cliques[[2]], '#FF1493', '#7EC0EE')
 plot(g)
 ```
 

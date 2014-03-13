@@ -61,20 +61,32 @@ adj.matrix
 # convert to graph
 g = graph.adjacency(adj.matrix, mode = "undirected")
 
-# find all cliques
-g.cliques = maximal.cliques(g)
-
-# color nodes in first clique matched
-V(g)$color = ifelse(V(g) %in% g.cliques[[1]], "#1E90FF", "#FF1493")
-
-# color nodes in multiple cliques purple
-V(g)[V(g) %in% intersect(g.cliques[[1]], g.cliques[[2]])]$color = "#8C14FF"
-
-# plot cliques
+# plot graph
 plot(g)
 ```
 
-![plot of chunk clique](figure/clique.png) 
+![plot of chunk clique](figure/clique1.png) 
+
+```r
+
+# find all cliques
+g.cliques = maximal.cliques(g)
+
+# plot first clique matched
+V(g)$color = ifelse(V(g) %in% g.cliques[[1]], "#FF1493", "#7EC0EE")
+plot(g)
+```
+
+![plot of chunk clique](figure/clique2.png) 
+
+```r
+
+# plot second clique matched
+V(g)$color = ifelse(V(g) %in% g.cliques[[2]], "#FF1493", "#7EC0EE")
+plot(g)
+```
+
+![plot of chunk clique](figure/clique3.png) 
 
 
 - In the above figure, nodes 1-4 and 4-6 each form separate cliques
