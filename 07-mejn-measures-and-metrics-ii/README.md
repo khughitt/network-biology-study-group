@@ -38,6 +38,9 @@ group detection (clustering, etc.) are discussed in later sections in the book.
 library(igraph)
 set.seed(1)
 
+# restore default igraph options
+igraph.options(vertex.size = NULL, vertex.label = NULL, edge.arrow.size = NULL)
+
 # adj matrix with two cliques
 adj.matrix = matrix(0, 6, 6)
 adj.matrix[1:4, 1:4] = 1
@@ -413,10 +416,11 @@ First, let's load the data and plot the actual network.
 ```r
 # load DREAM4 data
 library(DREAM4)
-data(dream4_010_01)
+igraph.options(vertex.size = 5, vertex.label = NA, edge.arrow.size = 0.4)
+data(dream4_100_01)
 
 # load expression dataset for the first 10 node network
-expression_data = assays(dream4_010_01)[[1]]
+expression_data = assays(dream4_100_01)[[1]]
 
 # get the time-series portion of the input data (also includes simulated
 # wildtype, knockout, etc. samples)
@@ -424,7 +428,7 @@ col_ids = grep("perturbation.1.", colnames(expression_data), fixed = TRUE)
 ts_data <- expression_data[, col_ids]
 
 # load actual network and plot it using igraph
-actual_adjmatrix = exptData(dream4_010_01)[[1]]
+actual_adjmatrix = exptData(dream4_100_01)[[1]]
 g = graph.adjacency(actual_adjmatrix)
 plot(g)
 ```
@@ -495,25 +499,26 @@ Next, let's look for k-cliques in the data using
 
 
 ```r
-# convert to an undirected node-edge list readable by RBGL and list
-# 2-cliques
+# convert to an undirected node-edge list readable by RBGL
 library(RBGL)
-kCliques(igraph.to.graphNEL(as.undirected(g)))[[2]]
+kcliques = kCliques(igraph.to.graphNEL(as.undirected(g)))
+
+# get number of kcliques with k=2
+length(kcliques[[2]])
 ```
 
 ```
-## [[1]]
-## [1] "G1" "G3" "G4" "G5"
-## 
-## [[2]]
-## [1] "G2" "G6" "G8"
-## 
-## [[3]]
-## [1] "G1"  "G3"  "G4"  "G7"  "G10"
-## 
-## [[4]]
-## [1] "G3"  "G4"  "G9"  "G10"
+## [1] 41
 ```
+
+```r
+
+# plot the third 2-clique found
+V(g)$color = ifelse(V(g)$name %in% kcliques[[2]][[3]], pal[5], pal[1])
+plot(g, main = "example k-clique (k=2)")
+```
+
+![plot of chunk dream4_kcliques](figure/dream4_kcliques.png) 
 
 
 References
@@ -545,7 +550,7 @@ date()
 ```
 
 ```
-## [1] "Thu Mar 13 17:20:49 2014"
+## [1] "Thu Mar 13 18:00:11 2014"
 ```
 
 ```r
