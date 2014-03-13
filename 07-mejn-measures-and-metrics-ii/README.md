@@ -7,7 +7,7 @@ Outline
 -------
 
 These notes cover the following sections of
-[MEJN](http://www-personal.umich.edu/~mejn/networks-an-introduction/):
+[MN](http://www-personal.umich.edu/~mejn/networks-an-introduction/):
 
 1. Groups of Vertices (7.8)
 2. Transitivity (7.9)
@@ -108,7 +108,7 @@ plot(g)
 - Example: a group of friends in a social network where most people know most
   other people in the network.
 - *k*-plexes can overlap.
-- MEJN: possible useful generalization -- require each member be connected to
+- MN: possible useful generalization -- require each member be connected to
   some *fraction* of the other members.
 
 ### *k*-cores
@@ -225,6 +225,31 @@ Quantifying the level of transitivity:
   length 3 (a triangle) in the network.
 - SNA -- *u*, *v*, and *w* form a *closed triad*
 
+### Example: computing network transitivity using igraph
+
+The igraph `transitivity` function can be used to compute the transitivity of a
+directed graph.
+
+
+```r
+# create a random directed graph
+g2 = erdos.renyi.game(10, 0.25, directed = TRUE)
+plot(g2)
+```
+
+![plot of chunk transitivity_example](figure/transitivity_example.png) 
+
+```r
+
+# compute the network transitivity
+igraph::transitivity(g2)  # (RBGL also defined a transitivity method)
+```
+
+```
+## [1] 0.6154
+```
+
+
 ## Clustering Coefficient
 
 > We define the clustering coefficient to be the fraction of paths of length
@@ -241,6 +266,21 @@ coefficient](https://raw.githubusercontent.com/khughitt/notes/master/courses/Cou
 - *C*=0 no closed triads in the network (e.g. a tree)
 - Provides a measure of how connected the neighbors of nodes are to one another
   on average.
+
+### Example: computing clustering coefficients using igraph
+
+The same `transitivity` function used on a directed network above can also be
+used to compute the clustering coefficient of an undirected network.
+
+
+```r
+# compute the network transitivity
+igraph::transitivity(g)
+```
+
+```
+## [1] 0.7143
+```
 
 
 ## 7.9.1 Local clustering and redundancy
@@ -268,7 +308,7 @@ pairs of neighbors of $i$)}}$$
     vertices in the network.
   - This results in a different value than the version described in the above
     section!
-  - Both are in use although MEJN prefers the earlier definition since it is
+  - Both are in use although MN prefers the earlier definition since it is
     easy to interpret and less influenced by verticed with low degree.
 
 ### Redundancy
@@ -505,7 +545,7 @@ date()
 ```
 
 ```
-## [1] "Thu Mar 13 17:07:41 2014"
+## [1] "Thu Mar 13 17:20:49 2014"
 ```
 
 ```r
