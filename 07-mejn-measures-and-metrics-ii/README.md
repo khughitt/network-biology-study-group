@@ -14,6 +14,9 @@ These notes cover the following sections of
 3. Reciprocity (7.10)
 4. Signed Edges and Structural Balance (7.11)
 
+Afterwards, a comparison between some of these approaches and other commonly
+used clustering methods is made.
+
 7.8 Groups of Vertices
 ----------------------
 
@@ -339,6 +342,65 @@ For a signed triangle, there are four possible configurations:
     - Networks that can be divided this way are said to be *clusterable*.
     - *Harary's theorem* says that balanced networks are clusterable.
 
+Comparison of Methods on Simulated Expression Data
+--------------------------------------------------
+
+## Overview
+
+I thought it might be fun to test out some of the above methods, along with
+other clustering-based approaches on some "real" data to see how each of them
+perform.
+
+Of course, there aren't very many real datasets where we know what that the
+underlying network should look like, so instead I will use the next best thing:
+a reasonably realistic simulated dataset, in this case, a dataset from the 2009
+[DREAM4 network prediction challenge](http://www.the-dream-project.org/challenges).
+
+The data used in the DREAM4 has been conveniently packaged and [made available
+through bioconductor](http://www.bioconductor.org/packages/release/data/experiment/html/DREAM4.html).
+For a more thorough explanation of the different datasets available and the 
+original challenge, see the [vignette for the above data
+package](http://www.bioconductor.org/packages/release/data/experiment/vignettes/DREAM4/inst/doc/DREAM4.pdf).
+
+For my purposes here, I'm going to grab the time-series expression data fields
+for one of the five 10-node network prediction challenges.
+
+First, let's load the data and plot the actual network.
+
+## DREAM4 network
+
+
+```r
+# load DREAM4 data
+library(DREAM4)
+data(dream4_010_01)
+
+# load expression dataset for the first 10 node network
+expression_data = assays(dream4_010_01)[[1]]
+
+# get the time-series portion of the input data (also includes simulated
+# wildtype, knockout, etc. samples)
+col_ids = grep("perturbation.1.", colnames(expression_data), fixed = TRUE)
+ts_data <- expression_data[, col_ids]
+
+# load actual network and plot it using igraph
+actual_adjmatrix = exptData(dream4_010_01)[[1]]
+actual_graph = graph.adjacency(actual_adjmatrix)
+plot(actual_graph)
+```
+
+![plot of chunk dream4_data](figure/dream4_data.png) 
+
+
+The above plot depicts the "true" underlying network. Next, let's test out some
+of the grouping measures described above on this network.
+
+## k-core
+
+
+
+
+
 References
 ----------
 - M.E.J. Newman, (2010) Networks: An Introduction
@@ -357,4 +419,48 @@ References
   [10.1038/ng.167](http://dx.doi.org/10.1038/ng.167)>
 - Hiller, Timo, Alliance Formation and Coercion in Networks (June 20, 2011).
   FEEM Working Paper No. 42.2011. Available at SSRN: http://ssrn.com/abstract=1868069
+- Shannon, Paul, DREAM4: Synthetic Expression Data for Gene Regulatory Network Inference
+  from the 2009 DREAM4 challenge. R package version 0.99.18.
+
+System info
+-----------
+
+```r
+date()
+```
+
+```
+## [1] "Thu Mar 13 12:18:52 2014"
+```
+
+```r
+sessionInfo()
+```
+
+```
+## R version 3.0.2 (2013-09-25)
+## Platform: x86_64-unknown-linux-gnu (64-bit)
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] parallel  stats     graphics  grDevices utils     datasets  methods  
+## [8] base     
+## 
+## other attached packages:
+## [1] DREAM4_0.99.18       GenomicRanges_1.14.4 XVector_0.2.0       
+## [4] IRanges_1.20.7       BiocGenerics_0.8.0   igraph_0.7.0        
+## [7] knitr_1.5            setwidth_1.0-3       colorout_1.0-0      
+## 
+## loaded via a namespace (and not attached):
+## [1] evaluate_0.5.1 formatR_0.10   markdown_0.6.4 stats4_3.0.2  
+## [5] stringr_0.6.2  tools_3.0.2
+```
+
 
