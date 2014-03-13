@@ -288,6 +288,45 @@ $$r = \frac{1}{m} \sum_{ij}A_{ij}A_{ji} = \frac{1}{m}Tr\mathbf{A}^2$$
 
 where *m* is the total number of edges in the network.
 
+7.11 Signed Edges and Structural Balance
+----------------------------------------
+
+## Signed networks
+
+- *Signed networks* are networks where edges are considered to be either 
+  "positive" or "negative"
+- The edges in these networks are called *signed edges*
+- E.g. 'friendship' and 'animosity' in a social network.
+- Adjacency matrix values then have three possible states:
+    1. no edge, 
+    2. positive edge
+    3. negative edge
+
+For a signed triangle, there are four possible configurations:
+
+![signed triads](images/Hiller_figure_1.jpg)
+(Hiller 2011)
+
+- Each of the above configurations can be considered to be either "stable" or 
+  "unstable".
+    - An even number of negative edges is what distinguishes the stable 
+      configurtions in the above examples.
+    - The trend holds for larger loops as well: those with even numbers of
+      negative edges are stable.
+- This idea of "stability" is borne out in naturally-arising networks: e.g. in
+  social networks loops with unstable configurations are found far less
+  frequently than stable configurations.
+
+## Structural balance
+
+> Networks containing only loops with even numbers of minus signs are said to
+> show *structural balance*, or sometimes just *balance*.
+
+- Balanced networks can be divided into connected groups of vertices such that
+  all vertices in each group has the same sign.
+    - Networks that can be divided this way are said to be *clusterable*.
+    - *Harary's theorem* says that balanced networks are clusterable.
+
 References
 ----------
 - M.E.J. Newman, (2010) Networks: An Introduction
@@ -304,4 +343,6 @@ References
   Functional Genomic Data to Dissect The Complexity of Yeast Regulatory
   Networks.  *Nature Genetics*  **40**  854-861
   [10.1038/ng.167](http://dx.doi.org/10.1038/ng.167)>
+- Hiller, Timo, Alliance Formation and Coercion in Networks (June 20, 2011).
+  FEEM Working Paper No. 42.2011. Available at SSRN: http://ssrn.com/abstract=1868069
 
