@@ -1,14 +1,13 @@
-% Network Measures and Metrics II
-% Keith Hughitt
-% 2014/03/12
-
 Network Measures and Metrics II
 ===============================
+Keith Hughitt
+2014/03/12
 
 Outline
 -------
 
-These notes cover the following sections of MEJN:
+These notes cover the following sections of
+[MEJN](http://www-personal.umich.edu/~mejn/networks-an-introduction/):
 
 1. Groups of Vertices (7.8)
 2. Transitivity (7.9)
@@ -172,9 +171,12 @@ coefficient](https://raw.githubusercontent.com/khughitt/notes/master/courses/Cou
 - Provides a measure of how connected the neighbors of nodes are to one another
   on average.
 
+
 ## 7.9.1 Local clustering and redundancy
 
 We can extend the above concept to a measure to single nodes:
+
+### Local clustering coefficient
 
 $$C_i = \frac{\text{(number of pairs of neighbors of $i$ that are connected)}}{\text{(number of
 pairs of neighbors of $i$)}}$$
@@ -188,6 +190,22 @@ pairs of neighbors of $i$)}}$$
     - Betweeness considers all nodes in components, but local clustering just
       looks at neighbors of a node.
     - Local clustering much easier to compute.
+- Watts and Strogatz (1998) proprosed an alternative definition of the global
+  clustering coefficient of a network based on averaging the local coefficient
+  for each node.
+  - $$C_{WS} = \frac{1}{n}\sum_{i=1}^n C_i$$ where *n* is the number of
+    vertices in the network.
+  - This results in a different value than the version described in the above
+    section!
+  - Both are in use although MEJN prefers the earlier definition since it is
+    easy to interpret and less influenced by verticed with low degree.
+
+### Redundancy
+
+> The redundancy $R_i$ of a vertex *i* is the mean number of connections from a
+> neighbor of *i* to other neighbors of *i*.
+
+- Clustering coefficient is similar to this but scaled between 0 and 1
 
 ### Structural holes
 
@@ -195,6 +213,9 @@ pairs of neighbors of $i$)}}$$
   nets), the local clustering coefficient can help to find areas where this is
   not the case.
 - These locations are referred to as *structural holes*
+
+7.10 Reciprocity
+----------------
 
 References
 ----------
