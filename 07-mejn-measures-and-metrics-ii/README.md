@@ -36,17 +36,23 @@ library(igraph)
 set.seed(1)
 
 # adj matrix with two cliques
-clique = matrix(0, 6, 6)
-clique[0:4, 0:4] = 1
-clique[3, 4] = clique[4, 5] = clique[4, 5] = clique[4, 6] = clique[5, 6] = 1
-diag(clique) = 0
+adj.matrix = matrix(0, 6, 6)
+adj.matrix[0:4, 0:4] = 1
+adj.matrix[3, 4] = adj.matrix[4, 5] = adj.matrix[4, 5] = adj.matrix[4, 6] = adj.matrix[5, 
+    6] = 1
+diag(adj.matrix) = 0
 
 # convert to graph
-g = graph.adjacency(clique, mode = "undirected")
+g = graph.adjacency(adj.matrix, mode = "undirected")
 
-# color cliques
-V(g)$color = ifelse(V(g) %in% c(1, 2, 3), "#1E90FF", "#FF1493")
-V(g)[4]$color = "#8C14FF"
+# find all cliques
+g.cliques = maximal.cliques(g)
+
+# color nodes in first clique matched
+V(g)$color = ifelse(V(g) %in% g.cliques[[1]], "#1E90FF", "#FF1493")
+
+# color nodes in multiple cliques purple
+V(g)[V(g) %in% intersect(g.cliques[[1]], g.cliques[[2]])]$color = "#8C14FF"
 
 # plot cliques
 plot(g)
