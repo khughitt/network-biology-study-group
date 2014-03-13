@@ -27,7 +27,7 @@ group detection (clustering, etc.) are discussed in later sections in the book.
 > A *clique* is a maximal subset of the vertices in an *undirected* network 
 > such that every member of the set is connected by and edge to every other.
 
-Example:
+#### Example: cliques {igraph}
 
 
 ```r
@@ -41,6 +41,22 @@ adj.matrix[0:4, 0:4] = 1
 adj.matrix[3, 4] = adj.matrix[4, 5] = adj.matrix[4, 5] = adj.matrix[4, 6] = adj.matrix[5, 
     6] = 1
 diag(adj.matrix) = 0
+
+# print adjacency matrix
+adj.matrix
+```
+
+```
+##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    0    1    1    1    0    0
+## [2,]    1    0    1    1    0    0
+## [3,]    1    1    0    1    0    0
+## [4,]    1    1    1    0    1    1
+## [5,]    0    0    0    0    0    1
+## [6,]    0    0    0    0    0    0
+```
+
+```r
 
 # convert to graph
 g = graph.adjacency(adj.matrix, mode = "undirected")
@@ -89,6 +105,20 @@ plot(g)
   is defined as a hard value, irrespective of the size of the group.
 - A *k*-core with *n* vertices is the same as a (*n-k*)-plex
 - *k*-cores *cannot* overlap; overlapping *k*-cores can be combined into one.
+
+#### Example: graph.coreness {igraph}
+
+
+```r
+g.kcores = graph.coreness(g)
+
+# color 3-cores orange
+V(g)$color = ifelse(g.kcores == 3, "#FF6666", "#1E90FF")
+plot(g)
+```
+
+![plot of chunk kcores](figure/kcores.png) 
+
 
 #### Example: Robustness of *k*-core enrichment
 
