@@ -80,6 +80,26 @@ plot(g)
 - A *k*-core with *n* vertices is the same as a (*n-k*)-plex
 - *k*-cores *cannot* overlap; overlapping *k*-cores can be combined into one.
 
+#### Example: Robustness of *k*-core enrichment
+
+![k-core vs DE gene enrichment](images/F2.medium.gif)
+(Wachi et al. 2005)
+
+Washi et al (2005), looked at the enrichment of differentially expressed genes
+(DEG) in the *k*-cores of a network for successively larger values of *k*. They
+found that up-regulated (a) and down-regulated (b) genes were significantly
+enrichmed in the higher valued *k*-cores compared to random groups of genes of
+the same size.
+
+#### Example: Visualization of protein-interaction data
+
+![k-core protein interaction visualization](images/nbt1002-991-F1.gif)
+(Bader & Hogue, 2002)
+
+In the above example, *k*-core filtering is used to highlight interesting
+clustering of interacting yeast proteins. For parts A-C, k=6 (different
+datasets used in each case), while for D, k=9.
+
 ### *k*-cliques
 
 > A *k-clique* is a maximal subset of vertices such that each is no more than a
@@ -213,6 +233,35 @@ pairs of neighbors of $i$)}}$$
 7.10 Reciprocity
 ----------------
 
+> The frequency of loops of length two in a *directed network* is measured by
+> the *reciprocity*, and tells you how likely it is that a vertex that you
+> point to also points back to you.
+
+- In undirected networks the smallest loops of are of length 3 and the
+  clustering coefficient informs us about their frequency -- reciprocity is a
+  measure that looks at two node loops that form in directed networks.
+
+The reciprocity then is just the fraction of edges in a network that are
+reciprocated (if edge ij exists and ji also exists, we say that 
+
+$$r = \frac{1}{m} \sum_{ij}A_{ij}A_{ji} = \frac{1}{m}Tr\mathbf{A}^2$$
+
+where *m* is the total number of edges in the network.
+
 References
 ----------
 - M.E.J. Newman, (2010) Networks: An Introduction
+- S. Wachi, K. Yoneda, R. Wu,   (2005) Interactome-Transcriptome Analysis
+  Reveals The High Centrality of Genes Differentially Expressed in Lung Cancer
+  Tissues.  *Bioinformatics*  **21**  4205-4208
+  [10.1093/bioinformatics/bti688](http://dx.doi.org/10.1093/bioinformatics/bti688)>
+- Gary D. Bader, Christopher W.V. Hogue,   (2002) Analyzing Yeast
+  Protein–Protein Interaction Data Obtained From Different Sources.  *Nature
+  Biotechnology*  **20**  991-997
+  [10.1038/nbt1002-991](http://dx.doi.org/10.1038/nbt1002-991)
+- Jun Zhu, Bin Zhang, Erin N Smith, Becky Drees, Rachel B Brem, Leonid
+  Kruglyak, Roger E Bumgarner, Eric E Schadt,   (2008) Integrating Large-Scale
+  Functional Genomic Data to Dissect The Complexity of Yeast Regulatory
+  Networks.  *Nature Genetics*  **40**  854-861
+  [10.1038/ng.167](http://dx.doi.org/10.1038/ng.167)>
+
