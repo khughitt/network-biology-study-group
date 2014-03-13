@@ -37,7 +37,7 @@ set.seed(1)
 
 # adj matrix with two cliques
 adj.matrix = matrix(0, 6, 6)
-adj.matrix[0:4, 0:4] = 1
+adj.matrix[1:4, 1:4] = 1
 adj.matrix[3, 4] = adj.matrix[4, 5] = adj.matrix[4, 5] = adj.matrix[4, 6] = adj.matrix[5, 
     6] = 1
 diag(adj.matrix) = 0
@@ -160,7 +160,7 @@ datasets used in each case), while for D, k=9.
 - This is a generalization to the distance of the relationships between nodes.
 - *k*=1 is just an ordinary clique
 
-#### Example: Finding significant interactions in yeaste PPI data
+#### Example: Finding significant interactions in yeast PPI data
 
 ![Yeast PPI network](images/ng.167-F1.jpg)
 (Zhu et al, 2008)
