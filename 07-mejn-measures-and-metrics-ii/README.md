@@ -34,6 +34,10 @@ group detection (clustering, etc.) are discussed in later sections in the book.
 
 
 ```r
+# set default figure size
+library(knitr)
+opts_chunk$set(fig.width = 1024/96, fig.height = 1024/96, fig.dpi = 96)
+
 # load igraph and set random seed
 library(igraph)
 set.seed(1)
@@ -550,7 +554,7 @@ date()
 ```
 
 ```
-## [1] "Thu Mar 13 18:00:11 2014"
+## [1] "Thu Mar 13 18:04:01 2014"
 ```
 
 ```r
