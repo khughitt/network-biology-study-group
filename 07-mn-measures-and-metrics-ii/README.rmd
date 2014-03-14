@@ -17,6 +17,30 @@ These notes cover the following sections of
 Afterwards, a comparison between some of these approaches and other commonly
 used clustering methods is made.
 
+Setup
+-----
+
+Before getting started, let's load all of the libraries that will be used
+throughout this text.
+
+```{r load_libraries}
+library(knitr)
+library(igraph)
+library(DREAM4)
+library(RColorBrewer)
+library(RBGL)
+library(ggplot2)
+library(reshape2)
+
+# set knitr default figure size
+opts_chunk$set(fig.width=1024/96, fig.height=1024/96, fig.dpi=96)
+
+# set random seed
+set.seed(1)
+```
+
+# load igraph and set random seed
+
 7.8 Groups of Vertices
 ----------------------
 
@@ -33,13 +57,6 @@ group detection (clustering, etc.) are discussed in later sections in the book.
 #### Example: cliques {igraph}
 
 ```{r clique}
-# set default figure size
-library(knitr)
-opts_chunk$set(fig.width=1024/96, fig.height=1024/96, fig.dpi=96)
-
-# load igraph and set random seed
-library(igraph)
-set.seed(1)
 
 # restore default igraph options
 igraph.options(vertex.size=NULL, vertex.label=NULL, edge.arrow.size=NULL)
@@ -369,7 +386,6 @@ First, let's load the data and plot the actual network.
 
 ```{r dream4_data}
 # load DREAM4 data
-library(DREAM4)
 igraph.options(vertex.size=5, vertex.label=NA, edge.arrow.size=0.4)
 data(dream4_100_01)
 
@@ -394,7 +410,6 @@ of the grouping measures described above on this network.
 
 ```{r dream4_kcore}
 # color palette including default light blue
-library(RColorBrewer)
 set.seed(1); pal = c("#7EC0EE", sample(brewer.pal(9, "Set1")))
 
 # compute k-cores for with respect to ingoing edges, outgoing edges and
@@ -430,7 +445,6 @@ Next, let's look for k-cliques in the data using
 
 ```{r dream4_kcliques}
 # convert to an undirected node-edge list readable by RBGL
-library(RBGL)
 kcliques = kCliques(igraph.to.graphNEL(as.undirected(g)))
 
 # get number of kcliques with k=2
@@ -450,12 +464,31 @@ of the kinds of groupings they can generate.
 For comparison, let's try out a clustering method that works on the original
 data used to construct the network, rather than the network itself.
 
-First, let's use the elbow method to try and choose a reasonable value for *k*:
+Before doing this, however, let's inspect the data and try and clean it up a
+bit before processing.
+
+```{r dream4_dataprep}
+dim(ts_data)
+colSums(ts_data)
+
+# size-factor normalization
+normed = prop.table(ts_data, 2)
+
+# plot the expression profiles across time
+df = melt(normed)
+colnames(df) = c('gene', 'time', 'count')
+plt = ggplot(data=df, aes(x=time, y=count, group=gene)) + geom_line() +
+      ggtitle("Gene Expression Profiles (DREAM4 100-node time-series #1)") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+plot(plt)
+```
+
+Next, let's use the elbow method to try and choose a reasonable value for *k*:
 
 ```{r dream4_kmeans_1}
-wss = (nrow(ts_data) - 1) * sum(apply(ts_data, 2, var))
+wss = (nrow(normed) - 1) * sum(apply(normed, 2, var))
 for (i in 2:20) {
-    wss[i] = sum(kmeans(ts_data, centers=i, iter.max=100, nstart=50)$withinss)
+    wss[i] = sum(kmeans(normed, centers=i, iter.max=100, nstart=50)$withinss)
 }
 
 plot(1:20, wss, type="b", xlab="Number of Clusters",
@@ -467,7 +500,7 @@ plot(1:20, wss, type="b", xlab="Number of Clusters",
 ```{r dream4_kmeans_2}
 # cluster genes
 k = 5
-clusters = kmeans(ts_data, centers=k, iter.max=100, nstart=50)
+clusters = kmeans(normed, centers=k, iter.max=100, nstart=50)
 
 # color nodes and plot
 V(g)$color = pal[clusters$cluster]

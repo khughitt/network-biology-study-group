@@ -17,6 +17,32 @@ These notes cover the following sections of
 Afterwards, a comparison between some of these approaches and other commonly
 used clustering methods is made.
 
+Setup
+-----
+
+Before getting started, let's load all of the libraries that will be used
+throughout this text.
+
+
+```r
+library(knitr)
+library(igraph)
+library(DREAM4)
+library(RColorBrewer)
+library(RBGL)
+library(ggplot2)
+library(reshape2)
+
+# set knitr default figure size
+opts_chunk$set(fig.width = 1024/96, fig.height = 1024/96, fig.dpi = 96)
+
+# set random seed
+set.seed(1)
+```
+
+
+# load igraph and set random seed
+
 7.8 Groups of Vertices
 ----------------------
 
@@ -34,13 +60,6 @@ group detection (clustering, etc.) are discussed in later sections in the book.
 
 
 ```r
-# set default figure size
-library(knitr)
-opts_chunk$set(fig.width = 1024/96, fig.height = 1024/96, fig.dpi = 96)
-
-# load igraph and set random seed
-library(igraph)
-set.seed(1)
 
 # restore default igraph options
 igraph.options(vertex.size = NULL, vertex.label = NULL, edge.arrow.size = NULL)
@@ -419,7 +438,6 @@ First, let's load the data and plot the actual network.
 
 ```r
 # load DREAM4 data
-library(DREAM4)
 igraph.options(vertex.size = 5, vertex.label = NA, edge.arrow.size = 0.4)
 data(dream4_100_01)
 
@@ -448,7 +466,6 @@ of the grouping measures described above on this network.
 
 ```r
 # color palette including default light blue
-library(RColorBrewer)
 set.seed(1)
 pal = c("#7EC0EE", sample(brewer.pal(9, "Set1")))
 
@@ -504,7 +521,6 @@ Next, let's look for k-cliques in the data using
 
 ```r
 # convert to an undirected node-edge list readable by RBGL
-library(RBGL)
 kcliques = kCliques(igraph.to.graphNEL(as.undirected(g)))
 
 # get number of kcliques with k=2
@@ -534,13 +550,71 @@ of the kinds of groupings they can generate.
 For comparison, let's try out a clustering method that works on the original
 data used to construct the network, rather than the network itself.
 
-First, let's use the elbow method to try and choose a reasonable value for *k*:
+Before doing this, however, let's inspect the data and try and clean it up a
+bit before processing.
 
 
 ```r
-wss = (nrow(ts_data) - 1) * sum(apply(ts_data, 2, var))
+dim(ts_data)
+```
+
+```
+## [1] 100  21
+```
+
+```r
+colSums(ts_data)
+```
+
+```
+##            perturbation.1.t0   perturbation.1.applied.t50 
+##                        32.26                        31.56 
+##  perturbation.1.applied.t100  perturbation.1.applied.t150 
+##                        30.07                        29.42 
+##  perturbation.1.applied.t200  perturbation.1.applied.t250 
+##                        29.94                        30.29 
+##  perturbation.1.applied.t300  perturbation.1.applied.t350 
+##                        31.52                        32.01 
+##  perturbation.1.applied.t400  perturbation.1.applied.t450 
+##                        32.57                        32.65 
+##  perturbation.1.applied.t500  perturbation.1.removed.t550 
+##                        32.77                        35.97 
+##  perturbation.1.removed.t600  perturbation.1.removed.t650 
+##                        34.49                        32.99 
+##  perturbation.1.removed.t700  perturbation.1.removed.t750 
+##                        33.26                        32.53 
+##  perturbation.1.removed.t800  perturbation.1.removed.t850 
+##                        32.06                        32.24 
+##  perturbation.1.removed.t900  perturbation.1.removed.t950 
+##                        32.62                        31.65 
+## perturbation.1.removed.t1000 
+##                        32.63
+```
+
+```r
+
+# size-factor normalization
+normed = prop.table(ts_data, 2)
+
+# plot the expression profiles across time
+df = melt(normed)
+colnames(df) = c("gene", "time", "count")
+plt = ggplot(data = df, aes(x = time, y = count, group = gene)) + geom_line() + 
+    ggtitle("Gene Expression Profiles (DREAM4 100-node time-series #1)") + theme(axis.text.x = element_text(angle = 90, 
+    hjust = 1))
+plot(plt)
+```
+
+![plot of chunk dream4_dataprep](figure/dream4_dataprep.png) 
+
+
+Next, let's use the elbow method to try and choose a reasonable value for *k*:
+
+
+```r
+wss = (nrow(normed) - 1) * sum(apply(normed, 2, var))
 for (i in 2:20) {
-    wss[i] = sum(kmeans(ts_data, centers = i, iter.max = 100, nstart = 50)$withinss)
+    wss[i] = sum(kmeans(normed, centers = i, iter.max = 100, nstart = 50)$withinss)
 }
 
 plot(1:20, wss, type = "b", xlab = "Number of Clusters", ylab = "Within groups sum of squares")
@@ -555,7 +629,7 @@ plot(1:20, wss, type = "b", xlab = "Number of Clusters", ylab = "Within groups s
 ```r
 # cluster genes
 k = 5
-clusters = kmeans(ts_data, centers = k, iter.max = 100, nstart = 50)
+clusters = kmeans(normed, centers = k, iter.max = 100, nstart = 50)
 
 # color nodes and plot
 V(g)$color = pal[clusters$cluster]
@@ -594,7 +668,7 @@ date()
 ```
 
 ```
-## [1] "Thu Mar 13 22:00:59 2014"
+## [1] "Fri Mar 14 15:59:40 2014"
 ```
 
 ```r
@@ -618,15 +692,18 @@ sessionInfo()
 ## [8] base     
 ## 
 ## other attached packages:
-##  [1] RBGL_1.38.0          graph_1.40.1         RColorBrewer_1.0-5  
-##  [4] DREAM4_0.99.18       GenomicRanges_1.14.4 XVector_0.2.0       
-##  [7] IRanges_1.20.7       BiocGenerics_0.8.0   igraph_0.7.0        
-## [10] knitr_1.5            vimcom.plus_0.9-92   setwidth_1.0-3      
-## [13] colorout_1.0-0      
+##  [1] ggplot2_0.9.3.1      reshape2_1.2.2       RBGL_1.38.0         
+##  [4] graph_1.40.1         RColorBrewer_1.0-5   DREAM4_0.99.18      
+##  [7] GenomicRanges_1.14.4 XVector_0.2.0        IRanges_1.20.7      
+## [10] BiocGenerics_0.8.0   igraph_0.7.0         knitr_1.5           
+## [13] vimcom.plus_0.9-92   setwidth_1.0-3       colorout_1.0-0      
 ## 
 ## loaded via a namespace (and not attached):
-## [1] evaluate_0.5.1 formatR_0.10   markdown_0.6.4 stats4_3.0.2  
-## [5] stringr_0.6.2  tools_3.0.2
+##  [1] colorspace_1.2-4 dichromat_2.0-0  digest_0.6.4     evaluate_0.5.1  
+##  [5] formatR_0.10     grid_3.0.2       gtable_0.1.2     labeling_0.2    
+##  [9] markdown_0.6.4   MASS_7.3-29      munsell_0.4.2    plyr_1.8.1      
+## [13] proto_0.3-10     Rcpp_0.11.0      scales_0.2.3     stats4_3.0.2    
+## [17] stringr_0.6.2    tools_3.0.2
 ```
 
 
