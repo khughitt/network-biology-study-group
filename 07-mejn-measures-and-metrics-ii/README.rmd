@@ -438,7 +438,40 @@ length(kcliques[[2]])
 
 # plot the third 2-clique found
 V(g)$color = ifelse(V(g)$name %in% kcliques[[2]][[3]], pal[5], pal[1])
-plot(g, main='example k-clique (k=2)')
+plot(g, main='k-clique (k=2) example clique')
+```
+
+## k-means clustering
+
+In both cases above (k-cores and k-cliques), multiple overlapping groupings
+were found for the test network. The example plots above should give some sense
+of the kinds of groupings they can generate.
+
+For comparison, let's try out a clustering method that works on the original
+data used to construct the network, rather than the network itself.
+
+First, let's use the elbow method to try and choose a reasonable value for *k*:
+
+```{r dream4_kmeans_1}
+wss = (nrow(ts_data) - 1) * sum(apply(ts_data, 2, var))
+for (i in 2:20) {
+    wss[i] = sum(kmeans(ts_data, centers=i, iter.max=100, nstart=50)$withinss)
+}
+
+plot(1:20, wss, type="b", xlab="Number of Clusters",
+     ylab="Within groups sum of squares")
+```
+
+*k*=5 looks like a reasonable value -- determine clusters and plot.
+
+```{r dream4_kmeans_2}
+# cluster genes
+k = 5
+clusters = kmeans(ts_data, centers=k, iter.max=100, nstart=50)
+
+# color nodes and plot
+V(g)$color = pal[clusters$cluster]
+plot(g, main='k-means clustering')
 ```
 
 References
