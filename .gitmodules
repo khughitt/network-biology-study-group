@@ -1,3 +1,6 @@
 [submodule "02-network-biology-overview-i"]
 	path = 02-network-biology-overview-i
 	url = https://github.com/khughitt/slidify-network-biology/
+[submodule "10-co-expr_co-reg_relationship"]
+	path = 10-co-expr_co-reg_relationship
+	url = https://github.com/khughitt/slidify-co-expr_co-reg_relationship.git
