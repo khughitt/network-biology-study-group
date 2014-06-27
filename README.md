@@ -30,3 +30,9 @@ Contents
 5. Mathematics of Networks II (6.10-6.14) [JH]
 6. Measures and Metrics I (7.1-7.7) [DD]
 7. Measures and Metrics II (7.8-7.11) [KH]
+8. Real-world Networks I (8.1-8.4) [KO]
+9. Real-world Networks II (8.5-?) [KO]
+10. Quantifying the relationship between co-expression, co-regulation and gene
+    function [KH]
+
+
