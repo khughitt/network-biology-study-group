@@ -1,0 +1,25 @@
+
+Overview
+========
+
+But first...
+------------
+
+### Recent network, etc. literature
+
+```{r results='asis'}
+library(knitcitations)
+
+citep('10.1371/journal.pcbi.1003676')
+citep('10.1093/bib/bbu013')
+citep('10.1093/biostatistics/kxu027')
+citep('10.1093/bioinformatics/18.4.513')
+citep('10.1093/bioinformatics/18.4.513')
+citep('10.1093/bioinformatics/18.4.513')
+citep('10.3389/fgene.2014.00177')
+citep('10.1038/nature13302')
+
+
+
+bibliography()
+```
