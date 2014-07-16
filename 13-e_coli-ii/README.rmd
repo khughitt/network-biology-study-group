@@ -24,8 +24,8 @@ Overview
 ========
 
 Below we will load in some E. coli transcriptome data from the [Many Microbe
-Microarrays Database (M3D)](m3d.mssm.edu), and explore some basic properties of
-the data.
+Microarrays Database (M3D)](http://www.m3d.mssm.edu), and explore some basic
+properties of the data.
 
 Hopefully, the code below will provide a good starting point for future R-based
 network analyses of the data.
@@ -43,21 +43,19 @@ Load libraries
 
 ```{r load_libraries}
 library(reshape2)
+library(RColorBrewer)
 library(dplyr)
 ```
 
 Load data
 ---------
 
-### Load experiment and feature data
+### Load feature data
 
 To begin, let's load in some of the metadata which describes the sources and
 experimental conditions included in the microarray datasets.
 
-```{r load_experiment_data}
-# experiment information
-experiment_data = tbl_df(read.delim('input/E_coli_v4_Build_6.experiment_descriptions'))
-
+```{r load_feature_data}
 # load feature data
 features_long = tbl_df(read.delim('input/E_coli_v4_Build_6.experiment_feature_descriptions'))
 features_long = features_long %>% select(experiment_name, feature_name, value)
@@ -82,7 +80,7 @@ features = colnames(feature_data)
 features[complete.cases(t(feature_data))]
 
 # distribution of strains
-sort(table(feature_data$strain), decreasing=TRUE)
+head(sort(table(feature_data$strain), decreasing=TRUE), 10)
 ```
 
 This gives us a pretty good place to start. let's build a simplified design
@@ -144,6 +142,11 @@ feature_data = feature_data[!is.na(feature_data$growth_phase),]
 feature_data = feature_data %>% select(experiment_name, experimenter,
                                        growth_phase, strain)
 rownames(feature_data) = 1:nrow(feature_data)
+```
+
+#### Sample design
+
+```{r sample_summary, results='asis'}
 kable(feature_data)
 ```
 
@@ -155,6 +158,129 @@ That should be good for now. Now let's move onto the actual expression data.
 # expression data
 raw_data = tbl_df(read.delim('input/E_coli_v4_Build_6_chips907probes4297.tab.gz',
                              row.names=1))
+dim(raw_data)
+
+# load experiment data (includes experiment/replicate mapping)
+experiment_data = tbl_df(read.delim('input/E_coli_v4_Build_6.experiment_descriptions'))
+dim(experiment_data)
+
+# drop chips that are not related to our design
+experiment_data = experiment_data %>% filter(experiment_name %in%
+                                             feature_data$experiment_name)
+dim(experiment_data)
+
+raw_data = raw_data[,colnames(raw_data) %in% experiment_data$chip_name]
+dim(raw_data)
+```
+
+Growth phase exploration
+------------------------
+
+Before beginning, let's first load a few helper functions that will be useful
+in the downstream analysis...
+
+### Helper functions
+
+
+```{r helper_functions}
+#
+# Choose colors to use when plotting sample condition and batch
+#
+sample_plot_colors = function (condition, batch) {
+    # Convert to factor if not already and remove any unused levels
+    condition = factor(condition)
+    batch = factor(batch)
+
+    # Batch colors
+    if (nlevels(batch) > 1) {
+        if (nlevels(batch) <= 12) {
+            rc=brewer.pal(12, "Set3")[as.integer(batch)]
+        } else {
+            rc=rainbow(nlevels(batch))
+        }
+    } else {
+        rc = rep("green", length(batch))
+    }
+
+    # Condition colors
+    if (nlevels(condition) > 1) {
+        if (nlevels(batch) <= 9) {
+            cc=brewer.pal(9,"Set1")[as.integer(condition)]
+        } else {
+            cc=tail(rainbow(nlevels(condition) +
+                            nlevels(batch)),
+                    nlevels(condition))
+        }
+    } else {
+        cc =  rep("red",length(condition))
+    }
+
+    return(list("batch"=rc, "condition"=cc))
+}
+
+#
+# Plot sample heatmap
+#
+plot_sample_heatmap = function (counts, design, metric='dist', col='heat.colors') {
+    # Compute euclidean distance or pearson correlation between samples
+    if (metric == 'dist') {
+        dists = dist(t(counts))
+        mat = as.matrix( dists )
+    } else if (metric == 'pearson') {
+        mat = cor(counts)
+    }
+
+    # Select plot colors
+    plot_colors = sample_plot_colors(design)
+
+    # Heatmap plot
+    hv = heatmap.2(mat, margin=c(6, 6), trace="none", key=FALSE, col=col,
+                   RowSideColors=plot_colors$batch,
+                   ColSideColors=plot_colors$condition)
+    legend(x="topleft", legend=unique(design$Condition),
+           col=unique(plot_colors$condition), pch=15)
+    legend(x="topright", legend=unique(design$Batch),
+           col=unique(plot_colors$batch), pch=15)
+}
+
+#
+# Plot sample PCA components
+#
+plot_sample_pca = function(counts, design, main="", axis1=1, axis2=2,
+                           include_table=TRUE) {
+    # PCA
+    pca = makeSVD(counts)
+    pcVar = round((pca$d^2) / sum(pca$d^2) * 100, 2)
+
+    # X and Y axis labels
+    xl = sprintf("PC%d: %.2f%% variance", axis1, pcVar[axis1])
+    yl = sprintf("PC%d: %.2f%% variance", axis2, pcVar[axis2])
+
+    # Create combined data frame
+    pcaData = data.frame(SampleID=colnames(counts),
+                         PC1=pca$v[,axis1], PC2=pca$v[,axis2],
+                         Condition=design$Condition, Batch=design$Batch)
+
+    # Plot specified principle components
+    plt = ggplot(pcaData, aes(PC1, PC2, color=Condition, shape=Batch)) +
+        geom_point(stat="identity",size=5) +
+        geom_text(aes(label=SampleID), angle=45, size=4,vjust=2) +
+        xlab(xl) + ylab(yl) +
+        ggtitle(sprintf("%s (PC%d vs. PC%d)", main, axis1, axis2)) +
+        theme(axis.ticks=element_blank(), axis.text.x=element_text(angle=-90))
+    print(plt)
+
+    # Compute variance of each PC and how they correlate with batch and
+    # condition
+    if (nlevels(design$Batch) > 1) {
+        pcs = pcRes(pca$v, pca$d, design$Condition, design$Batch)
+    } else {
+        pcs = pcRes(pca$v, pca$d, design$Condition)
+    }
+    rownames(pcs) = paste0("PC", rownames(pcs))
+
+    kable(pcs)
+}
 ```
 
 System Information
