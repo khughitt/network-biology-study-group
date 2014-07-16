@@ -1,25 +1,179 @@
+Many Microbe Microarrays Database (M3D) Data Preparation
+=======================================================
+
+```{r knitr_settings, include=FALSE}
+library(knitr)
+opts_knit$set(progress=TRUE, verbose=TRUE)
+opts_chunk$set(fig.width=1080/96,
+               fig.height=1080/96,
+               dpi=96)
+```
+
+```{r run_date, results='asis', echo=FALSE}
+email = "<a href='mailto:khughitt@umd.edu'>Keith Hughitt</a>"
+last_update = format(Sys.time(), "(<time>%Y-%m-%d</time>)")
+cat(paste(email, last_update))
+
+# Clean up any existing variables
+rm(list=ls())
+```
+
+[view source](README.rmd)
 
 Overview
 ========
 
-But first...
-------------
+Below we will load in some E. coli transcriptome data from the [Many Microbe
+Microarrays Database (M3D)](m3d.mssm.edu), and explore some basic properties of
+the data.
 
-### Recent network, etc. literature
+Hopefully, the code below will provide a good starting point for future R-based
+network analyses of the data.
 
-```{r results='asis'}
+The data included in this repo and used below comes M3D build 6, accessed on
+July 16, 2014. Currently, the gene only normalized version of the **E. coli**
+microarray data is used. In the future it may be worth analyzing the raw data
+and including probes for intergenic regions.
+
+Methods
+=======
+
+Load libraries
+-------------
+
+```{r load_libraries}
+library(reshape2)
+library(dplyr)
+```
+
+Load data
+---------
+
+### Load experiment and feature data
+
+To begin, let's load in some of the metadata which describes the sources and
+experimental conditions included in the microarray datasets.
+
+```{r load_experiment_data}
+# experiment information
+experiment_data = tbl_df(read.delim('input/E_coli_v4_Build_6.experiment_descriptions'))
+
+# load feature data
+features_long = tbl_df(read.delim('input/E_coli_v4_Build_6.experiment_feature_descriptions'))
+features_long = features_long %>% select(experiment_name, feature_name, value)
+
+# remove any NA features (found one in above dataset)
+features_long = features_long %>% filter(!is.na(feature_name))
+
+# list of features included in datasets
+unique(features_long$feature_name)
+
+# flatten feature data
+feature_data = tbl_df(dcast(features_long, experiment_name ~ feature_name,
+                            value.var="value"))
+dim(feature_data)
+
+# not all of the features are guaranteed to be covered for a given sample. This
+# means that there will be a number of NAs in the data:
+feature_data[1:5,1:5]
+
+# which features which have values set for every sample?
+features = colnames(feature_data)
+features[complete.cases(t(feature_data))]
+
+# distribution of strains
+sort(table(feature_data$strain), decreasing=TRUE)
+```
+
+This gives us a pretty good place to start. let's build a simplified design
+matrix including sample id, experiment (~batch), and XXXX feature.
+
+#### Limit to K12 MG1655 strain
+
+For simplicity, let's focus for now on one strain:
+
+- [E. coli K12 MG1655](http://www.genome.wisc.edu/resources/strains.htm)
+
+This is the most widely studied strain in the dataset and includes nearly half
+of all of the samples included in M3D.
+
+```{r clean_feature_data}
+feature_data = feature_data %>% filter(strain %in% c('MG1655', 'MG1655_yale'))
+
+# remove any features for which there are no longer any relevant samples
+feature_data = feature_data[,features[colSums(!is.na(feature_data)) > 0]]
+features = colnames(feature_data)
+
+# number of samples remaining
+nrow(feature_data)
+```
+
+#### Explore features in dataset
+
+Next, let's see which features are most commonly studied.
+
+```{r feature_exploration}
+# most common features
+sort(colSums(!is.na(feature_data)), decreasing=TRUE)
+
+# temperature
+table(as.numeric(feature_data$culture_temperature))
+
+# time
+# we would need to normalize the units before making any comparisons here
+table(feature_data$time_point)
+
+# cell density
+table(feature_data$cell_density)
+
+# growth phase
+table(feature_data$growth_phase)
+```
+
+#### Limit to growth phase data
+
+Let's start by looking at growth phase since there is a large number of samples
+with known growth phase information and the number of samples in each phase is
+decent.
+
+```{r select_growth_phase_data, results='asis'}
+# discard samples with no growth phase information
+feature_data = feature_data[!is.na(feature_data$growth_phase),]
+
+# drop other unrelated features (for now...)
+feature_data = feature_data %>% select(experiment_name, experimenter,
+                                       growth_phase, strain)
+rownames(feature_data) = 1:nrow(feature_data)
+kable(feature_data)
+```
+
+That should be good for now. Now let's move onto the actual expression data.
+
+### Load expression data
+
+```{r load_expression_data}
+# expression data
+raw_data = tbl_df(read.delim('input/E_coli_v4_Build_6_chips907probes4297.tab.gz',
+                             row.names=1))
+```
+
+System Information
+------------------
+
+```{r sysinfo}
+sessionInfo()
+date()
+```
+
+References
+----------
+
+```{r refs, include=FALSE}
 library(knitcitations)
+cleanbib()
+citep('10.1093/nar/gkm815')
+```
 
-citep('10.1371/journal.pcbi.1003676')
-citep('10.1093/bib/bbu013')
-citep('10.1093/biostatistics/kxu027')
-citep('10.1093/bioinformatics/18.4.513')
-citep('10.1093/bioinformatics/18.4.513')
-citep('10.1093/bioinformatics/18.4.513')
-citep('10.3389/fgene.2014.00177')
-citep('10.1038/nature13302')
-
-
-
-bibliography()
+```{r refs_output, echo=FALSE, results='asis'}
+bibliography('html')
 ```

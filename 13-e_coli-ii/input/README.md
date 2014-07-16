@@ -1,6 +1,13 @@
+Overview
+========
+
 This file describes the normalized compendium dumps from M3D.
 
---- EXPRESSION DATA ---
+Source: [http://m3d.mssm.edu/](http://m3d.mssm.edu/)
+
+EXPRESSION DATA
+===============
+
 You should find six files with expression data in them. The
 naming convention for these files is Compendium_chipsMprobesN.tab
 where M = the number of chips in the file and N is the number
@@ -12,24 +19,28 @@ the compendium name and they have "exps" rather than "chips".  These
 three files contain the average of the replicates for experiments that
 have replicates.
 
---- PROBE INFORMATION ---
+PROBE INFORMATION
+=================
+
 In each dump, you will find a file of the form 
 
 Compendium.probe_set_descriptions 
 
-This file contains additional names
-for each probe_set. It contains the probe set name, the locus (the standard
-gene name used for the species, for example b0123 for E. coli and SO0123 for 
-Shewanella), the common name, and a friendly name. The friendly name is 
-the common name if a gene has a common name, otherwise it is the locus.
+This file contains additional names for each probe_set. It contains the probe
+set name, the locus (the standard gene name used for the species, for example
+`b0123` for E. coli and `SO0123` for Shewanella), the common name, and a
+friendly name. The friendly name is the common name if a gene has a common
+name, otherwise it is the locus.
 
-For the E_coli_v4_Build_2_norm data set we have included a separate file 
+For the `E_coli_v4_Build_2_norm` data set we have included a separate file 
 containing probe_set --> probe mappings and sequences:
 
-  E_coli_v4_Build_2_norm.probe_data.txt
+  `E_coli_v4_Build_2_norm.probe_data.txt`
 
 
---- CHIP INFORMATION ---
+CHIP INFORMATION
+================
+
 In each dump, you will find a file of the form 
 
 Compendium.experiment_descriptions 
@@ -38,10 +49,11 @@ This file contains basic condition information for each experiment and
 chip in the compendium.
 
 
---- STRUCTURED EXPERIMENTAL METADATA ---
+STRUCTURED EXPERIMENTAL METADATA
+================================
 Compendia that are version 4 or later have an additional file
 
-Compendium.experiment_feature_descriptions 
+`Compendium.experiment_feature_descriptions`
 
 This file contains curated detailed condition information for each experiment.
 For each experiment, you will find many rows.  Each row corresponds to one
@@ -53,3 +65,4 @@ so that it is easier to combine and merge the different chemicals to calculate
 the number of certain important atoms like Sulfur and Nitrogen.  Chemically 
 undefined constituents like yeast extract are provided in their commonly used
 units.
+
