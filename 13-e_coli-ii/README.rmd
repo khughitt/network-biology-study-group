@@ -42,9 +42,12 @@ Load libraries
 -------------
 
 ```{r load_libraries}
+library(cbcbSEQ)
 library(reshape2)
 library(RColorBrewer)
 library(dplyr)
+library(gplots)
+library(ggplot2)
 ```
 
 Load data
@@ -128,7 +131,8 @@ table(feature_data$cell_density)
 table(feature_data$growth_phase)
 ```
 
-#### Limit to growth phase data
+Growth phase exploration
+------------------------
 
 Let's start by looking at growth phase since there is a large number of samples
 with known growth phase information and the number of samples in each phase is
@@ -148,6 +152,22 @@ rownames(feature_data) = 1:nrow(feature_data)
 
 ```{r sample_summary, results='asis'}
 kable(feature_data)
+
+# load experiment data (includes experiment/replicate mapping)
+experiment_data = tbl_df(read.delim('input/E_coli_v4_Build_6.experiment_descriptions'))
+dim(experiment_data)
+
+# drop chips that are not related to our design
+experiment_data = experiment_data %>% filter(experiment_name %in%
+                                             feature_data$experiment_name)
+dim(experiment_data)
+
+# design
+design = data.frame(
+    condition=feature_data$growth_phase[match(experiment_data$experiment_name,
+                                              feature_data$experiment_name)],
+    batch=experiment_data$experiment_name
+)
 ```
 
 That should be good for now. Now let's move onto the actual expression data.
@@ -160,27 +180,14 @@ raw_data = tbl_df(read.delim('input/E_coli_v4_Build_6_chips907probes4297.tab.gz'
                              row.names=1))
 dim(raw_data)
 
-# load experiment data (includes experiment/replicate mapping)
-experiment_data = tbl_df(read.delim('input/E_coli_v4_Build_6.experiment_descriptions'))
-dim(experiment_data)
-
-# drop chips that are not related to our design
-experiment_data = experiment_data %>% filter(experiment_name %in%
-                                             feature_data$experiment_name)
-dim(experiment_data)
-
 raw_data = raw_data[,colnames(raw_data) %in% experiment_data$chip_name]
 dim(raw_data)
 ```
 
-Growth phase exploration
-------------------------
-
-Before beginning, let's first load a few helper functions that will be useful
-in the downstream analysis...
-
 ### Helper functions
 
+Before continuing, let's first load a few helper functions that will be useful
+in the downstream analysis...
 
 ```{r helper_functions}
 #
@@ -196,7 +203,7 @@ sample_plot_colors = function (condition, batch) {
         if (nlevels(batch) <= 12) {
             rc=brewer.pal(12, "Set3")[as.integer(batch)]
         } else {
-            rc=rainbow(nlevels(batch))
+            rc=rainbow(nlevels(batch))[as.integer(batch)]
         }
     } else {
         rc = rep("green", length(batch))
@@ -204,12 +211,12 @@ sample_plot_colors = function (condition, batch) {
 
     # Condition colors
     if (nlevels(condition) > 1) {
-        if (nlevels(batch) <= 9) {
+        if (nlevels(condition) <= 9) {
             cc=brewer.pal(9,"Set1")[as.integer(condition)]
         } else {
             cc=tail(rainbow(nlevels(condition) +
                             nlevels(batch)),
-                    nlevels(condition))
+                    nlevels(condition))[as.integer(condition)]
         }
     } else {
         cc =  rep("red",length(condition))
@@ -221,7 +228,8 @@ sample_plot_colors = function (condition, batch) {
 #
 # Plot sample heatmap
 #
-plot_sample_heatmap = function (counts, design, metric='dist', col='heat.colors') {
+plot_sample_heatmap = function (counts, condition, batch,
+                                metric='dist', col='heat.colors') {
     # Compute euclidean distance or pearson correlation between samples
     if (metric == 'dist') {
         dists = dist(t(counts))
@@ -231,22 +239,22 @@ plot_sample_heatmap = function (counts, design, metric='dist', col='heat.colors'
     }
 
     # Select plot colors
-    plot_colors = sample_plot_colors(design)
+    plot_colors = sample_plot_colors(condition, batch)
 
     # Heatmap plot
     hv = heatmap.2(mat, margin=c(6, 6), trace="none", key=FALSE, col=col,
                    RowSideColors=plot_colors$batch,
                    ColSideColors=plot_colors$condition)
-    legend(x="topleft", legend=unique(design$Condition),
+    legend(x="topleft", legend=unique(condition),
            col=unique(plot_colors$condition), pch=15)
-    legend(x="topright", legend=unique(design$Batch),
-           col=unique(plot_colors$batch), pch=15)
+    #legend(x="topright", legend=unique(batch),
+    #       col=unique(plot_colors$batch), pch=15)
 }
 
 #
 # Plot sample PCA components
 #
-plot_sample_pca = function(counts, design, main="", axis1=1, axis2=2,
+plot_sample_pca = function(counts, condition, batch, main="", axis1=1, axis2=2,
                            include_table=TRUE) {
     # PCA
     pca = makeSVD(counts)
@@ -259,12 +267,12 @@ plot_sample_pca = function(counts, design, main="", axis1=1, axis2=2,
     # Create combined data frame
     pcaData = data.frame(SampleID=colnames(counts),
                          PC1=pca$v[,axis1], PC2=pca$v[,axis2],
-                         Condition=design$Condition, Batch=design$Batch)
+                         Condition=condition, Batch=batch)
 
     # Plot specified principle components
     plt = ggplot(pcaData, aes(PC1, PC2, color=Condition, shape=Batch)) +
         geom_point(stat="identity",size=5) +
-        geom_text(aes(label=SampleID), angle=45, size=4,vjust=2) +
+        #geom_text(aes(label=SampleID), angle=45, size=4,vjust=2) +
         xlab(xl) + ylab(yl) +
         ggtitle(sprintf("%s (PC%d vs. PC%d)", main, axis1, axis2)) +
         theme(axis.ticks=element_blank(), axis.text.x=element_text(angle=-90))
@@ -272,15 +280,25 @@ plot_sample_pca = function(counts, design, main="", axis1=1, axis2=2,
 
     # Compute variance of each PC and how they correlate with batch and
     # condition
-    if (nlevels(design$Batch) > 1) {
-        pcs = pcRes(pca$v, pca$d, design$Condition, design$Batch)
+    if (nlevels(batch) > 1) {
+        pcs = pcRes(pca$v, pca$d, condition, batch)
     } else {
-        pcs = pcRes(pca$v, pca$d, design$Condition)
+        pcs = pcRes(pca$v, pca$d, condition)
     }
     rownames(pcs) = paste0("PC", rownames(pcs))
 
     kable(pcs)
 }
+```
+
+### Samples
+
+```{r sample_relationships, results='asis'}
+plot_sample_pca(raw_data,
+                condition=design$condition,
+                batch=design$batch)
+
+plot_sample_heatmap(raw_data, design$condition, design$batch)
 ```
 
 System Information

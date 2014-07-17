@@ -1,0 +1,7 @@
+knitrBootstrap::bootstrap_document:
+    title: "Many Microbe Microarrays Database (M3D) Data Preparation"
+    theme: flatly
+    theme.chooser: true
+    highlight.chooser: true
+md_document:
+    variant: "markdown_github"
