@@ -24,16 +24,16 @@ Overview
 ========
 
 Below we will load in some E. coli transcriptome data from the [Many Microbe
-Microarrays Database (M3D)](http://www.m3d.mssm.edu), and explore some basic
-properties of the data.
+Microarrays Database (M<sup>3D</sup>)](http://www.m3d.mssm.edu), and explore
+some basic properties of the data.
 
 Hopefully, the code below will provide a good starting point for future R-based
 network analyses of the data.
 
-The data included in this repo and used below comes M3D build 6, accessed on
-July 16, 2014. Currently, the gene only normalized version of the **E. coli**
-microarray data is used. In the future it may be worth analyzing the raw data
-and including probes for intergenic regions.
+The data included in this repo and used below comes M<sup>3D</sup> build 6,
+accessed on July 16, 2014. Currently, the gene only normalized version of the
+**E. coli** microarray data is used. In the future it may be worth analyzing
+the raw data and including probes for intergenic regions.
 
 Methods
 =======
@@ -48,6 +48,7 @@ library(RColorBrewer)
 library(dplyr)
 library(gplots)
 library(ggplot2)
+library(limma)
 ```
 
 Load data
@@ -96,7 +97,7 @@ For simplicity, let's focus for now on one strain:
 - [E. coli K12 MG1655](http://www.genome.wisc.edu/resources/strains.htm)
 
 This is the most widely studied strain in the dataset and includes nearly half
-of all of the samples included in M3D.
+of all of the samples included in M<sup>3D</sup>.
 
 ```{r clean_feature_data}
 feature_data = feature_data %>% filter(strain %in% c('MG1655', 'MG1655_yale'))
@@ -300,6 +301,68 @@ plot_sample_pca(raw_data,
 
 plot_sample_heatmap(raw_data, design$condition, design$batch)
 ```
+
+### Removing batch from the data
+
+```{r batch_residuals, eval=FALSE}
+model_batch = model.matrix(~design$batch)
+fit_batch = lmFit(raw_data)
+
+# Get the residuals (everything but batch effect)
+batch_residuals = residuals(fit_batch, voom_batch)
+
+plot_sample_pca(batch_residuals[,include], design_final, "Batch included in linear model")
+
+plot_sample_heatmap(batch_residuals[,include], design_final)
+```
+
+Discussion
+==========
+
+Questions
+---------
+
+1. Dealing with batch
+    - In the context of a combined dataset such as this, does the use of
+      `experiment_name` as batch make the most sense?
+    - Are there other better ways to divide up the dataset or to choose
+      experiments to exclude? (e.g. remove all perturbations)
+    - Would it be possible to include more than one non-biological variable in
+      the model, e.g. `experimenter_name`?
+2. Exploratory data analysis
+    - Any other methods for exploring the initial dataset that would be worth
+      trying out?
+         - biplots, biological effect residuals, etc.
+3. Higher-dimension dataset
+    - In the above analysis, I started by removing all of the features, save for
+      one batch and one biological variable of interest. Are there other ways to
+      make use of the dataset as-is, or at least, with more of the features
+      included?
+4. Network analysis
+    - Would this dataset be appropriate to use for constructing a co-expression
+      or gene-regulatory network? What other information might we need?
+    - If so, what part(s) of the data should be used? and what should be
+      excluded?
+
+Where to next?
+--------------
+
+Some things that might be worth pursuing from here:
+
+- Pull in some additional annotation data:
+    - [BSgenome.Ecoli.NCBI.20080805](http://www.bioconductor.org/packages/2.13/data/annotation/html/BSgenome.Ecoli.NCBI.20080805.html), or,
+    - [org.EcK12.eg.db](http://www.bioconductor.org/packages/2.13/data/annotation/html/org.EcK12.eg.db.html)
+- Start with raw data and clean/normalize ourselves.
+- Make use of one of the larger M<sup>3D</sup> datasets, such as the one which
+  includes intergenic regions.
+- Investigate other sources of information and data:
+    - [Reactome](http://www.reactome.org/)
+    - [EcoCyc](http://ecocyc.org/)
+- Read/discuss a paper where a E. coli network is constructed and validated
+  using some of these resources.
+- Start trying out some of the methods we come across on our cleaned up
+  dataset.
+- **Come up with a researh question...**
 
 System Information
 ------------------
