@@ -361,6 +361,8 @@ Some things that might be worth pursuing from here:
 - Investigate other sources of information and data:
     - [Reactome](http://www.reactome.org/)
     - [EcoCyc](http://ecocyc.org/)
+- Look into more recent data sets.
+- Try integrating some RNA-Seq datasets
 - Read/discuss a paper where a E. coli network is constructed and validated
   using some of these resources.
 - Start trying out some of the methods we come across on our cleaned up

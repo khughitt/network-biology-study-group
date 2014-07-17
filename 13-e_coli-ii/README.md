@@ -1,18 +1,18 @@
 Many Microbe Microarrays Database (M3D) Data Preparation
 ========================================================
 
-<a href='mailto:khughitt@umd.edu'>Keith Hughitt</a> (<time>2014-07-16</time>)
+<a href='mailto:khughitt@umd.edu'>Keith Hughitt</a> (<time>2014-07-17</time>)
 
 [view source](README.rmd)
 
 Overview
 ========
 
-Below we will load in some E. coli transcriptome data from the [Many Microbe Microarrays Database (M3D)](http://www.m3d.mssm.edu), and explore some basic properties of the data.
+Below we will load in some E. coli transcriptome data from the [Many Microbe Microarrays Database (M<sup>3D</sup>)](http://www.m3d.mssm.edu), and explore some basic properties of the data.
 
 Hopefully, the code below will provide a good starting point for future R-based network analyses of the data.
 
-The data included in this repo and used below comes M3D build 6, accessed on July 16, 2014. Currently, the gene only normalized version of the **E. coli** microarray data is used. In the future it may be worth analyzing the raw data and including probes for intergenic regions.
+The data included in this repo and used below comes M<sup>3D</sup> build 6, accessed on July 16, 2014. Currently, the gene only normalized version of the **E. coli** microarray data is used. In the future it may be worth analyzing the raw data and including probes for intergenic regions.
 
 Methods
 =======
@@ -27,6 +27,7 @@ library(RColorBrewer)
 library(dplyr)
 library(gplots)
 library(ggplot2)
+library(limma)
 ```
 
 Load data
@@ -152,7 +153,7 @@ For simplicity, let's focus for now on one strain:
 
 -   [E. coli K12 MG1655](http://www.genome.wisc.edu/resources/strains.htm)
 
-This is the most widely studied strain in the dataset and includes nearly half of all of the samples included in M3D.
+This is the most widely studied strain in the dataset and includes nearly half of all of the samples included in M<sup>3D</sup>.
 
 ``` {.r}
 feature_data = feature_data %>% filter(strain %in% c('MG1655', 'MG1655_yale'))
@@ -548,7 +549,7 @@ plot_sample_pca = function(counts, condition, batch, main="", axis1=1, axis2=2,
     }
     rownames(pcs) = paste0("PC", rownames(pcs))
 
-    kable(pcs)
+    kable(head(pcs, 30))
 }
 ```
 
@@ -602,165 +603,70 @@ plot_sample_pca(raw_data,
 |PC28|0.33|92.05|3.92|94.48|
 |PC29|0.31|92.36|1.93|92.11|
 |PC30|0.29|92.65|1.57|88.22|
-|PC31|0.27|92.92|0.91|90.15|
-|PC32|0.26|93.18|2.91|79.24|
-|PC33|0.25|93.43|3.59|84.88|
-|PC34|0.24|93.67|4.76|81.81|
-|PC35|0.23|93.90|2.55|82.06|
-|PC36|0.22|94.12|5.78|88.14|
-|PC37|0.21|94.33|4.77|67.31|
-|PC38|0.18|94.51|2.75|81.56|
-|PC39|0.18|94.69|4.79|80.95|
-|PC40|0.18|94.87|1.45|85.95|
-|PC41|0.17|95.04|0.20|82.69|
-|PC42|0.16|95.20|2.83|80.28|
-|PC43|0.15|95.35|1.05|83.03|
-|PC44|0.15|95.50|0.99|73.31|
-|PC45|0.13|95.63|0.78|76.28|
-|PC46|0.13|95.76|3.10|63.12|
-|PC47|0.13|95.89|0.87|85.58|
-|PC48|0.12|96.01|1.38|77.74|
-|PC49|0.12|96.13|1.75|69.64|
-|PC50|0.11|96.24|4.06|72.24|
-|PC51|0.11|96.35|2.29|73.31|
-|PC52|0.10|96.45|2.70|73.20|
-|PC53|0.10|96.55|0.70|58.99|
-|PC54|0.10|96.65|2.29|73.36|
-|PC55|0.09|96.74|2.01|59.83|
-|PC56|0.09|96.83|2.34|71.92|
-|PC57|0.09|96.92|0.36|72.57|
-|PC58|0.08|97.00|0.58|58.31|
-|PC59|0.08|97.08|0.25|56.56|
-|PC60|0.08|97.16|0.40|65.35|
-|PC61|0.07|97.23|1.48|63.97|
-|PC62|0.07|97.30|0.27|73.41|
-|PC63|0.07|97.37|0.40|60.63|
-|PC64|0.07|97.44|1.30|56.71|
-|PC65|0.06|97.50|0.22|52.45|
-|PC66|0.06|97.56|0.10|58.25|
-|PC67|0.06|97.62|0.91|57.29|
-|PC68|0.06|97.68|0.50|68.95|
-|PC69|0.06|97.74|0.12|62.30|
-|PC70|0.06|97.80|0.87|53.67|
-|PC71|0.06|97.86|0.12|52.64|
-|PC72|0.05|97.91|0.58|54.67|
-|PC73|0.05|97.96|1.02|56.98|
-|PC74|0.05|98.01|0.21|58.21|
-|PC75|0.05|98.06|0.62|48.94|
-|PC76|0.05|98.11|0.09|64.47|
-|PC77|0.05|98.16|0.26|41.79|
-|PC78|0.04|98.20|0.41|32.38|
-|PC79|0.04|98.24|0.68|53.30|
-|PC80|0.04|98.28|0.77|45.67|
-|PC81|0.04|98.32|0.16|39.68|
-|PC82|0.04|98.36|0.22|46.29|
-|PC83|0.04|98.40|0.88|46.85|
-|PC84|0.04|98.44|0.66|34.22|
-|PC85|0.04|98.48|0.23|55.27|
-|PC86|0.04|98.52|0.30|27.33|
-|PC87|0.04|98.56|0.27|41.55|
-|PC88|0.03|98.59|0.41|31.93|
-|PC89|0.03|98.62|0.37|37.38|
-|PC90|0.03|98.65|0.12|35.88|
-|PC91|0.03|98.68|0.06|38.02|
-|PC92|0.03|98.71|0.17|27.30|
-|PC93|0.03|98.74|0.31|41.36|
-|PC94|0.03|98.77|0.17|51.24|
-|PC95|0.03|98.80|0.12|26.87|
-|PC96|0.03|98.83|0.34|37.06|
-|PC97|0.03|98.86|0.25|28.67|
-|PC98|0.03|98.89|0.37|26.51|
-|PC99|0.03|98.92|0.07|36.46|
-|PC100|0.03|98.95|0.26|40.89|
-|PC101|0.03|98.98|0.05|24.94|
-|PC102|0.03|99.01|0.01|24.82|
-|PC103|0.02|99.03|0.09|31.52|
-|PC104|0.02|99.05|0.07|34.37|
-|PC105|0.02|99.07|0.34|39.04|
-|PC106|0.02|99.09|0.06|33.87|
-|PC107|0.02|99.11|0.15|36.50|
-|PC108|0.02|99.13|0.09|31.61|
-|PC109|0.02|99.15|0.08|34.01|
-|PC110|0.02|99.17|0.35|35.42|
-|PC111|0.02|99.19|0.02|42.82|
-|PC112|0.02|99.21|0.13|30.61|
-|PC113|0.02|99.23|0.17|39.46|
-|PC114|0.02|99.25|0.05|29.51|
-|PC115|0.02|99.27|0.23|39.59|
-|PC116|0.02|99.29|0.01|45.65|
-|PC117|0.02|99.31|0.05|31.50|
-|PC118|0.02|99.33|0.05|28.92|
-|PC119|0.02|99.35|0.06|26.67|
-|PC120|0.02|99.37|0.05|33.73|
-|PC121|0.02|99.39|0.32|20.24|
-|PC122|0.02|99.41|0.06|24.45|
-|PC123|0.02|99.43|0.02|30.03|
-|PC124|0.02|99.45|0.01|28.14|
-|PC125|0.02|99.47|0.03|30.27|
-|PC126|0.02|99.49|0.09|34.47|
-|PC127|0.02|99.51|0.01|31.45|
-|PC128|0.02|99.53|0.16|32.14|
-|PC129|0.02|99.55|0.23|14.12|
-|PC130|0.02|99.57|0.03|28.00|
-|PC131|0.02|99.59|0.02|25.65|
-|PC132|0.02|99.61|0.09|35.67|
-|PC133|0.01|99.62|0.03|20.81|
-|PC134|0.01|99.63|0.03|20.76|
-|PC135|0.01|99.64|0.03|14.20|
-|PC136|0.01|99.65|0.03|18.72|
-|PC137|0.01|99.66|0.03|31.81|
-|PC138|0.01|99.67|0.07|31.70|
-|PC139|0.01|99.68|0.01|28.09|
-|PC140|0.01|99.69|0.08|30.88|
-|PC141|0.01|99.70|0.03|15.46|
-|PC142|0.01|99.71|0.11|11.76|
-|PC143|0.01|99.72|0.03|21.41|
-|PC144|0.01|99.73|0.01|8.65|
-|PC145|0.01|99.74|0.05|12.71|
-|PC146|0.01|99.75|0.00|19.15|
-|PC147|0.01|99.76|0.01|14.29|
-|PC148|0.01|99.77|0.03|9.57|
-|PC149|0.01|99.78|0.00|12.33|
-|PC150|0.01|99.79|0.02|12.43|
-|PC151|0.01|99.80|0.01|13.64|
-|PC152|0.01|99.81|0.05|7.48|
-|PC153|0.01|99.82|0.01|7.92|
-|PC154|0.01|99.83|0.01|7.72|
-|PC155|0.01|99.84|0.03|7.93|
-|PC156|0.01|99.85|0.02|15.90|
-|PC157|0.01|99.86|0.03|8.47|
-|PC158|0.01|99.87|0.01|17.42|
-|PC159|0.01|99.88|0.01|14.36|
-|PC160|0.01|99.89|0.05|5.02|
-|PC161|0.01|99.90|0.01|5.75|
-|PC162|0.01|99.91|0.02|21.92|
-|PC163|0.01|99.92|0.01|5.07|
-|PC164|0.01|99.93|0.01|7.06|
-|PC165|0.01|99.94|0.01|7.81|
-|PC166|0.01|99.95|0.00|11.85|
-|PC167|0.01|99.96|0.01|8.04|
-|PC168|0.01|99.97|0.02|3.67|
-|PC169|0.01|99.98|0.01|6.92|
-|PC170|0.01|99.99|0.02|9.43|
-|PC171|0.01|100.00|0.02|5.88|
-|PC172|0.01|100.01|0.01|13.08|
-|PC173|0.01|100.02|0.01|2.35|
-|PC174|0.01|100.03|0.01|4.83|
-|PC175|0.00|100.03|0.00|10.48|
-|PC176|0.00|100.03|0.00|7.24|
-|PC177|0.00|100.03|0.01|6.63|
-|PC178|0.00|100.03|0.00|1.59|
-|PC179|0.00|100.03|0.00|2.75|
-|PC180|0.00|100.03|0.00|2.74|
-|PC181|0.00|100.03|0.01|1.59|
-|PC182|0.00|100.03|0.00|1.24|
-|PC183|0.00|100.03|0.00|2.53|
 
 ``` {.r}
 plot_sample_heatmap(raw_data, design$condition, design$batch)
 ```
 
 ![plot of chunk sample\_relationships](./README_files/figure-markdown_github/sample_relationships2.png)
+
+### Removing batch from the data
+
+``` {.r}
+batch = design$batch
+
+model_batch = model.matrix(~batch)
+#voom_batch  = voom(normed_counts, model_batch)
+#fit_batch = lmFit(voom_batch)
+
+# Get the residuals (everything but batch effect)
+#batch_residuals = residuals(fit_batch, voom_batch)
+
+#plot_sample_pca(batch_residuals[,include], design_final, "Batch included in linear model")
+
+#plot_sample_heatmap(batch_residuals[,include], design_final)
+```
+
+Discussion
+==========
+
+Questions
+---------
+
+1.  Dealing with batch
+    -   In the context of a combined dataset such as this, does the use of `experiment_name` as batch make the most sense?
+    -   Are there other better ways to divide up the dataset or to choose experiments to exclude? (e.g. remove all perturbations)
+    -   Would it be possible to include more than one non-biological variable in the model, e.g. `experimenter_name`?
+
+2.  Exploratory data analysis
+    -   Any other methods for exploring the initial dataset that would be worth trying out?
+        -   biplots, biological effect residuals, etc.
+
+3.  Higher-dimension dataset
+    -   In the above analysis, I started by removing all of the features, save for one batch and one biological variable of interest. Are there other ways to make use of the dataset as-is, or at least, with more of the features included?
+
+4.  Network analysis
+    -   Would this dataset be appropriate to use for constructing a co-expression or gene-regulatory network? What other information might we need?
+    -   If so, what part(s) of the data should be used? and what should be excluded?
+
+Where to next?
+--------------
+
+Some things that might be worth pursuing from here:
+
+-   Pull in some additional annotation data:
+    -   [BSgenome.Ecoli.NCBI.20080805](http://www.bioconductor.org/packages/2.13/data/annotation/html/BSgenome.Ecoli.NCBI.20080805.html), or,
+    -   [org.EcK12.eg.db](http://www.bioconductor.org/packages/2.13/data/annotation/html/org.EcK12.eg.db.html)
+-   Start with raw data and clean/normalize ourselves.
+-   Make use of one of the larger M<sup>3D</sup> datasets, such as the one which includes intergenic regions.
+-   Investigate other sources of information and data:
+    -   [Reactome](http://www.reactome.org/)
+    -   [EcoCyc](http://ecocyc.org/)
+-   Look into more recent data sets.
+-   Try integrating some RNA-Seq datasets
+-   Read/discuss a paper where a E. coli network is constructed and validated using some of these resources.
+-   Start trying out some of the methods we come across on our cleaned up dataset.
+-   **Come up with a researh question...**
 
 System Information
 ------------------
@@ -787,30 +693,35 @@ sessionInfo()
     ##  [1] knitcitations_0.6-2   RefManageR_0.8.2      bibtex_0.3-6         
     ##  [4] ggplot2_1.0.0         gplots_2.14.0         dplyr_0.2            
     ##  [7] RColorBrewer_1.0-5    reshape2_1.4          cbcbSEQ_0.9.1        
-    ## [10] sva_3.10.0            mgcv_1.7-29           nlme_3.1-117         
-    ## [13] preprocessCore_1.26.1 corpcor_1.6.6         limma_3.20.8         
-    ## [16] knitr_1.6.5           rmarkdown_0.2.49      knitrBootstrap_1.0.0 
-    ## [19] setwidth_1.0-3        colorout_1.0-3        vimcom_1.0-0         
+    ## [10] sva_3.11.3            genefilter_1.47.6     mgcv_1.8-0           
+    ## [13] nlme_3.1-117          preprocessCore_1.27.1 corpcor_1.6.6        
+    ## [16] limma_3.21.10         knitr_1.6             rmarkdown_0.2.49     
+    ## [19] knitrBootstrap_1.0.0  setwidth_1.0-3        colorout_1.0-3       
+    ## [22] vimcom_1.0-0         
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] assertthat_0.1     bitops_1.0-6       caTools_1.17      
-    ##  [4] colorspace_1.2-4   digest_0.6.4       evaluate_0.5.5    
-    ##  [7] formatR_0.10       gdata_2.13.3       grid_3.1.0        
-    ## [10] gtable_0.1.2       gtools_3.4.1       htmltools_0.2.4   
-    ## [13] httr_0.3           KernSmooth_2.23-12 labeling_0.2      
-    ## [16] lattice_0.20-29    lubridate_1.3.3    magrittr_1.0.1    
-    ## [19] markdown_0.7       MASS_7.3-31        Matrix_1.1-3      
-    ## [22] memoise_0.2.1      mime_0.1.1         munsell_0.4.2     
-    ## [25] parallel_3.1.0     plyr_1.8.1         proto_0.3-10      
-    ## [28] Rcpp_0.11.2        RCurl_1.95-4.1     RJSONIO_1.2-0.2   
-    ## [31] scales_0.2.4       stringr_0.6.2      tools_3.1.0       
-    ## [34] XML_3.98-1.1       xtable_1.7-3       yaml_2.1.13
+    ##  [1] annotate_1.43.4      AnnotationDbi_1.27.8 assertthat_0.1      
+    ##  [4] Biobase_2.25.0       BiocGenerics_0.11.3  bitops_1.0-6        
+    ##  [7] caTools_1.17         colorspace_1.2-4     DBI_0.2-7           
+    ## [10] digest_0.6.4         evaluate_0.5.5       formatR_0.10        
+    ## [13] gdata_2.13.3         GenomeInfoDb_1.1.10  grid_3.1.0          
+    ## [16] gtable_0.1.2         gtools_3.4.1         htmltools_0.2.4     
+    ## [19] httr_0.3             IRanges_1.99.18      KernSmooth_2.23-12  
+    ## [22] labeling_0.2         lattice_0.20-29      lubridate_1.3.3     
+    ## [25] magrittr_1.0.1       markdown_0.7         MASS_7.3-33         
+    ## [28] Matrix_1.1-4         memoise_0.2.1        mime_0.1.1          
+    ## [31] munsell_0.4.2        parallel_3.1.0       plyr_1.8.1          
+    ## [34] proto_0.3-10         Rcpp_0.11.2          RCurl_1.95-4.1      
+    ## [37] RJSONIO_1.2-0.2      RSQLite_0.11.4       S4Vectors_0.1.2     
+    ## [40] scales_0.2.4         splines_3.1.0        stats4_3.1.0        
+    ## [43] stringr_0.6.2        survival_2.37-7      tools_3.1.0         
+    ## [46] XML_3.98-1.1         xtable_1.7-3         yaml_2.1.13
 
 ``` {.r}
 date()
 ```
 
-    ## [1] "Wed Jul 16 23:07:59 2014"
+    ## [1] "Thu Jul 17 09:52:45 2014"
 
 References
 ----------
