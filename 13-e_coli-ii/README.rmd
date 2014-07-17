@@ -288,7 +288,7 @@ plot_sample_pca = function(counts, condition, batch, main="", axis1=1, axis2=2,
     }
     rownames(pcs) = paste0("PC", rownames(pcs))
 
-    kable(pcs)
+    kable(head(pcs, 30))
 }
 ```
 
@@ -304,16 +304,19 @@ plot_sample_heatmap(raw_data, design$condition, design$batch)
 
 ### Removing batch from the data
 
-```{r batch_residuals, eval=FALSE}
-model_batch = model.matrix(~design$batch)
-fit_batch = lmFit(raw_data)
+```{r batch_residuals, results='asis'}
+batch = design$batch
+
+model_batch = model.matrix(~batch)
+#voom_batch  = voom(normed_counts, model_batch)
+#fit_batch = lmFit(voom_batch)
 
 # Get the residuals (everything but batch effect)
-batch_residuals = residuals(fit_batch, voom_batch)
+#batch_residuals = residuals(fit_batch, voom_batch)
 
-plot_sample_pca(batch_residuals[,include], design_final, "Batch included in linear model")
+#plot_sample_pca(batch_residuals[,include], design_final, "Batch included in linear model")
 
-plot_sample_heatmap(batch_residuals[,include], design_final)
+#plot_sample_heatmap(batch_residuals[,include], design_final)
 ```
 
 Discussion
