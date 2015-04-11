@@ -693,35 +693,30 @@ sessionInfo()
     ##  [1] knitcitations_0.6-2   RefManageR_0.8.2      bibtex_0.3-6         
     ##  [4] ggplot2_1.0.0         gplots_2.14.0         dplyr_0.2            
     ##  [7] RColorBrewer_1.0-5    reshape2_1.4          cbcbSEQ_0.9.1        
-    ## [10] sva_3.11.3            genefilter_1.47.6     mgcv_1.8-0           
-    ## [13] nlme_3.1-117          preprocessCore_1.27.1 corpcor_1.6.6        
-    ## [16] limma_3.21.10         knitr_1.6             rmarkdown_0.2.49     
-    ## [19] knitrBootstrap_1.0.0  setwidth_1.0-3        colorout_1.0-3       
-    ## [22] vimcom_1.0-0         
+    ## [10] sva_3.10.0            mgcv_1.7-29           nlme_3.1-117         
+    ## [13] preprocessCore_1.26.1 corpcor_1.6.6         limma_3.20.8         
+    ## [16] knitr_1.6.5           rmarkdown_0.2.49      knitrBootstrap_1.0.0 
+    ## [19] setwidth_1.0-3        colorout_1.0-3        vimcom_1.0-0         
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] annotate_1.43.4      AnnotationDbi_1.27.8 assertthat_0.1      
-    ##  [4] Biobase_2.25.0       BiocGenerics_0.11.3  bitops_1.0-6        
-    ##  [7] caTools_1.17         colorspace_1.2-4     DBI_0.2-7           
-    ## [10] digest_0.6.4         evaluate_0.5.5       formatR_0.10        
-    ## [13] gdata_2.13.3         GenomeInfoDb_1.1.10  grid_3.1.0          
-    ## [16] gtable_0.1.2         gtools_3.4.1         htmltools_0.2.4     
-    ## [19] httr_0.3             IRanges_1.99.18      KernSmooth_2.23-12  
-    ## [22] labeling_0.2         lattice_0.20-29      lubridate_1.3.3     
-    ## [25] magrittr_1.0.1       markdown_0.7         MASS_7.3-33         
-    ## [28] Matrix_1.1-4         memoise_0.2.1        mime_0.1.1          
-    ## [31] munsell_0.4.2        parallel_3.1.0       plyr_1.8.1          
-    ## [34] proto_0.3-10         Rcpp_0.11.2          RCurl_1.95-4.1      
-    ## [37] RJSONIO_1.2-0.2      RSQLite_0.11.4       S4Vectors_0.1.2     
-    ## [40] scales_0.2.4         splines_3.1.0        stats4_3.1.0        
-    ## [43] stringr_0.6.2        survival_2.37-7      tools_3.1.0         
-    ## [46] XML_3.98-1.1         xtable_1.7-3         yaml_2.1.13
+    ##  [1] assertthat_0.1     bitops_1.0-6       caTools_1.17      
+    ##  [4] colorspace_1.2-4   digest_0.6.4       evaluate_0.5.5    
+    ##  [7] formatR_0.10       gdata_2.13.3       grid_3.1.0        
+    ## [10] gtable_0.1.2       gtools_3.4.1       htmltools_0.2.4   
+    ## [13] httr_0.3           KernSmooth_2.23-12 labeling_0.2      
+    ## [16] lattice_0.20-29    lubridate_1.3.3    magrittr_1.0.1    
+    ## [19] markdown_0.7       MASS_7.3-31        Matrix_1.1-3      
+    ## [22] memoise_0.2.1      mime_0.1.1         munsell_0.4.2     
+    ## [25] parallel_3.1.0     plyr_1.8.1         proto_0.3-10      
+    ## [28] Rcpp_0.11.2        RCurl_1.95-4.1     RJSONIO_1.2-0.2   
+    ## [31] scales_0.2.4       stringr_0.6.2      tools_3.1.0       
+    ## [34] XML_3.98-1.1       xtable_1.7-3       yaml_2.1.13
 
 ``` {.r}
 date()
 ```
 
-    ## [1] "Thu Jul 17 09:52:45 2014"
+    ## [1] "Thu Jul 17 16:12:00 2014"
 
 References
 ----------

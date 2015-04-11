@@ -1,0 +1,35 @@
+---
+title: Real World Networks ii
+author: Keith Hughitt
+date: 2015/04/11
+output: md_document
+---
+
+Real World Networks ii
+======================
+
+Small-World Networks (Watts & Strogatz, 1998)
+---------------------------------------------
+
+Example of generating a small-world network, starting from a regular lattice.
+
+```{r small_world_networks}
+library(igraph)
+set.seed(1)
+
+# Create ring lattice
+g = graph.lattice(length=50, dim=1, nei=4, circular=TRUE)
+g$layout = layout.circle
+
+# Average path length and clustering coefficient
+average.path.length(g)
+transitivity(g)
+plot(g)
+
+# Rewire edges
+g2 = rewire.edges(g, prob=0.1)
+average.path.length(g2)
+transitivity(g2)
+plot(g2)
+```
+
